@@ -900,7 +900,7 @@
     }
 
     /* ==========================================================================
-       Pane 3: Notion-Style Editor
+       Pane 3: Continuous Notebook Editor
        ========================================================================== */
     .editor-pane {
       display: flex;
@@ -1154,27 +1154,9 @@
     .page-title-input:focus { outline: none; }
     .page-title-input::placeholder { color: var(--text-muted); opacity: 0.55; }
 
-    /* Block Handle Button (Left of Active Block) */
+    /* Continuous Notebook Surface */
     .editor-surface-wrap { position: relative; }
 
-    .block-handle-btn {
-      position: absolute;
-      left: -30px;
-      top: 0;
-      width: 26px;
-      height: 26px;
-      border-radius: 5px;
-      color: var(--text-muted);
-      background: var(--bg-app);
-      border: 1px solid transparent;
-      display: none;
-      z-index: 10;
-    }
-
-    .block-handle-btn.visible { display: inline-flex; }
-    .block-handle-btn:hover { background: var(--bg-hover); color: var(--text-primary); border-color: var(--border-color); }
-
-    /* Rich Text Surface (Plain & Blank, No Placeholder) */
     .editor-surface {
       min-height: 360px;
       outline: none;
@@ -1186,7 +1168,10 @@
     .editor-surface h1 { font-size: 1.65rem; font-weight: 700; margin: 0.9em 0 0.35em; line-height: 1.28; }
     .editor-surface h2 { font-size: 1.35rem; font-weight: 700; margin: 0.85em 0 0.3em; line-height: 1.34; }
     .editor-surface h3 { font-size: 1.12rem; font-weight: 600; margin: 0.75em 0 0.25em; line-height: 1.4; }
-    .editor-surface p { margin: 0 0 0.55em; min-height: 1.5em; }
+    .editor-surface p, .editor-surface > div:not(.callout-block):not(.checklist-item):not(.attachment-block):not(.toggle-block) {
+      margin: 0 0 0.55em;
+      min-height: 1.5em;
+    }
     .editor-surface ul, .editor-surface ol { margin: 0.35em 0 0.7em; padding-left: 1.55em; }
     .editor-surface li { margin-bottom: 0.2em; }
 
@@ -1198,18 +1183,6 @@
       border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
     }
 
-    .editor-surface pre {
-      margin: 0.7em 0;
-      padding: 12px 14px;
-      background: var(--bg-code);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-md);
-      overflow-x: auto;
-      font-family: var(--font-mono);
-      font-size: 0.88rem;
-      line-height: 1.55;
-    }
-
     .editor-surface code {
       font-family: var(--font-mono);
       font-size: 0.88em;
@@ -1219,7 +1192,6 @@
       border-radius: 4px;
     }
 
-    .editor-surface pre code { background: transparent; color: inherit; padding: 0; }
     .editor-surface hr { border: none; border-top: 1px solid var(--border-strong); margin: 1.1em 0; }
     .editor-surface a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
 
@@ -1489,47 +1461,6 @@
       text-decoration: line-through;
       color: var(--text-muted);
     }
-
-    /* Toggle List Block */
-    .editor-surface .toggle-block {
-      margin: 0.55em 0;
-      padding: 6px 10px;
-      border-radius: var(--radius-sm);
-      border: 1px solid var(--border-color);
-    }
-
-    .editor-surface .toggle-header {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-weight: 600;
-    }
-
-    .editor-surface .toggle-arrow {
-      width: 22px;
-      height: 22px;
-      border-radius: 4px;
-      color: var(--text-muted);
-      flex-shrink: 0;
-      user-select: none;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.72rem;
-      transition: transform 140ms ease;
-    }
-
-    .editor-surface .toggle-block.open .toggle-arrow { transform: rotate(90deg); }
-    .editor-surface .toggle-summary { flex: 1; min-width: 0; }
-
-    .editor-surface .toggle-content {
-      display: none;
-      padding: 6px 0 2px 28px;
-      color: var(--text-secondary);
-    }
-
-    .editor-surface .toggle-block.open .toggle-content { display: block; }
 
     /* Sub-page Link inside Editor */
     .editor-surface .subpage-link {
@@ -2062,6 +1993,45 @@
       justify-content: flex-end;
     }
 
+    /* Markdown Cheat Sheet Table */
+    .md-help-list {
+      overflow-y: auto;
+      max-height: 360px;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 6px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 0.84rem;
+    }
+
+    .md-help-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 5px 4px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .md-help-row:last-child { border-bottom: none; }
+
+    .md-help-code {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      background: var(--bg-code);
+      color: var(--nt-red);
+      padding: 2px 6px;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+
+    .md-help-desc {
+      color: var(--text-secondary);
+      text-align: right;
+    }
+
     @media (max-width: 768px) {
       .settings-backdrop {
         align-items: flex-end;
@@ -2090,8 +2060,10 @@
       box-shadow: var(--shadow-lg);
       padding: 6px;
       min-width: 200px;
-      max-height: 380px;
+      max-width: calc(100vw - 16px);
+      max-height: min(380px, calc(100vh - 16px));
       overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
     }
 
     .popover-menu.open { display: flex; }
@@ -2109,7 +2081,7 @@
       width: 100%;
       justify-content: flex-start;
       padding: 7px 9px;
-      min-height: 36px;
+      min-height: 44px;
       font-size: 0.86rem;
       color: var(--text-primary);
       border-radius: var(--radius-sm);
@@ -2148,9 +2120,9 @@
     }
 
     .emoji-opt {
-      width: 36px;
-      height: 36px;
-      font-size: 1.2rem;
+      min-width: 44px;
+      min-height: 44px;
+      font-size: 1.25rem;
       border-radius: var(--radius-sm);
     }
 
@@ -2351,7 +2323,6 @@
 
       .editor-inner { padding: 16px 18px 140px; }
       .page-title-input { font-size: 1.55rem; }
-      .block-handle-btn { left: auto; right: 0; top: -32px; }
 
       .mobile-fab {
         display: inline-flex;
@@ -2375,6 +2346,10 @@
         right: 14px;
         bottom: calc(18px + var(--safe-bottom));
         align-items: center;
+      }
+
+      .emoji-grid {
+        grid-template-columns: repeat(6, 1fr);
       }
     }
   </style>
@@ -2513,7 +2488,7 @@
       <div id="editorEmptyState" class="empty-state">
         <div style="font-size:2.4rem;">📝</div>
         <h3>Select a page or create one</h3>
-        <p>Organize thoughts with notebooks, unlimited nested sub-pages, and Notion-style color blocks.</p>
+        <p>Organize thoughts with notebooks, unlimited nested sub-pages, and Notion-style color highlights.</p>
         <button id="emptyCreateBtn" class="btn-primary" type="button">Create New Page</button>
       </div>
 
@@ -2572,7 +2547,6 @@
             </div>
 
             <div class="editor-surface-wrap">
-              <button id="blockHandleBtn" class="block-handle-btn" type="button" aria-label="Block options (color, transform, delete)" title="Block menu (color &amp; actions)">⋮⋮</button>
               <div id="editorSurface" class="editor-surface" contenteditable="true" role="textbox" aria-multiline="true" aria-label="Page content"></div>
             </div>
           </div>
@@ -2757,11 +2731,12 @@
           </div>
         </div>
         <div class="settings-section">
-          <div class="settings-section-title">Data</div>
+          <div class="settings-section-title">Data &amp; Help</div>
           <div class="settings-action-row">
             <button id="exportBackupBtn" class="btn-secondary" type="button">Export backup (JSON)</button>
             <button id="importBackupBtn" class="btn-secondary" type="button">Import backup</button>
-            <input id="importFileInput" type="file" accept="application/json,.json" class="sr-only" aria-label="Import JSON backup">
+            <button id="markdownHelpBtn" class="btn-secondary" type="button">Markdown</button>
+            <input id="importFileInput" type="file" accept="application/json,.json,.md,.markdown,.txt,text/markdown,text/plain" multiple class="sr-only" aria-label="Import backup or Markdown files">
           </div>
         </div>
       </div>
@@ -2805,7 +2780,6 @@
       const IDB_NAME = 'folio_attachments_db';
       const IDB_STORE = 'attachments';
       const MAX_FILE_BYTES = 10 * 1024 * 1024; // 10 MB
-      const MAX_HISTORY = 50;
 
       const THEMES = ['light', 'dark', 'ocean'];
 
@@ -2855,34 +2829,52 @@
         '🎵', '📷', '⚡', '🔒', '💬', '🧩', '🏆'
       ];
 
-      const SLASH_COMMANDS = [
-        { id: 'h1', label: 'Heading 1', icon: 'H1', desc: 'Large section heading' },
-        { id: 'h2', label: 'Heading 2', icon: 'H2', desc: 'Medium section heading' },
-        { id: 'h3', label: 'Heading 3', icon: 'H3', desc: 'Small section heading' },
-        { id: 'ul', label: 'Bullet List', icon: '•', desc: 'Simple bulleted list' },
-        { id: 'ol', label: 'Numbered List', icon: '1.', desc: 'Ordered list' },
-        { id: 'checklist', label: 'Checklist', icon: '☑', desc: 'Track tasks with checkboxes' },
-        { id: 'quote', label: 'Quote', icon: '❝', desc: 'Capture a quote' },
-        { id: 'callout', label: 'Callout', icon: '💡', desc: 'Highlight important info' },
-        { id: 'toggle', label: 'Toggle List', icon: '▸', desc: 'Collapsible section' },
-        { id: 'code', label: 'Code Block', icon: '{}', desc: 'Monospace code snippet' },
-        { id: 'image', label: 'Image', icon: '🖼️', desc: 'Upload image from gallery' },
-        { id: 'file', label: 'File Attachment', icon: '📎', desc: 'Attach a file (max 10 MB)' },
-        { id: 'date', label: 'Date', icon: '📅', desc: 'Insert a date chip' },
-        { id: 'hr', label: 'Divider', icon: '—', desc: 'Visual separator line' },
-        { id: 'page', label: 'Sub-page', icon: '📄', desc: 'Create & link a nested sub-page' }
-      ];
-
       const uid = (prefix = 'id') =>
         `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 7)}`;
 
+      const sanitizeEmoji = (raw, fallback) => {
+        if (typeof raw !== 'string') return fallback;
+        const trimmed = raw.trim();
+        if (!trimmed) return fallback;
+        return Array.from(trimmed).slice(0, 8).join('');
+      };
+
       const escapeRegExp = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+      const escapeHtml = (str) =>
+        String(str || '')
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
 
       const debounce = (fn, delay) => {
         let t = null;
         return (...args) => {
           clearTimeout(t);
           t = setTimeout(() => fn(...args), delay);
+        };
+      };
+
+      const throttle = (fn, wait) => {
+        let last = 0;
+        let timer = null;
+        return (...args) => {
+          const now = Date.now();
+          const remaining = wait - (now - last);
+          if (remaining <= 0) {
+            clearTimeout(timer);
+            timer = null;
+            last = now;
+            fn(...args);
+          } else if (!timer) {
+            timer = setTimeout(() => {
+              last = Date.now();
+              timer = null;
+              fn(...args);
+            }, remaining);
+          }
         };
       };
 
@@ -3132,23 +3124,22 @@
       })();
 
       /* ======================================================================
-         Sanitizer Module (Strict Allowlist — Prevents XSS)
+         Sanitizer & Old Block-Editor Migration Module
          ====================================================================== */
       const Sanitizer = (() => {
         const ALLOWED_TAGS = new Set([
           'P', 'BR', 'DIV', 'SPAN', 'B', 'STRONG', 'I', 'EM', 'U', 'S', 'STRIKE',
-          'H1', 'H2', 'H3', 'UL', 'OL', 'LI', 'BLOCKQUOTE', 'PRE', 'CODE',
+          'H1', 'H2', 'H3', 'UL', 'OL', 'LI', 'BLOCKQUOTE', 'CODE',
           'A', 'HR', 'INPUT', 'SVG', 'RECT', 'LINE', 'PATH', 'IMG', 'BUTTON'
         ]);
 
         const ALLOWED_CLASSES = new Set([
           'callout-block', 'callout-icon', 'callout-body',
           'checklist-item', 'checked', 'checklist-box', 'checklist-text',
-          'toggle-block', 'open', 'toggle-header', 'toggle-arrow', 'toggle-summary', 'toggle-content',
           'subpage-link', 'subpage-link-icon', 'subpage-link-title',
           'date-chip', 'date-chip-text',
           'attachment-block', 'attachment-image-card', 'attachment-img', 'attachment-img-placeholder',
-          'attachment-menu-btn', 'attachment-file-card', 'attachment-file-left', 'attachment-file-icon',
+          'attachment-menu-btn', 'attachment-menu-btn-inline', 'attachment-file-card', 'attachment-file-left', 'attachment-file-icon',
           'attachment-file-meta', 'attachment-file-name', 'attachment-file-size',
           'attachment-file-actions', 'attachment-dl-btn',
           'nt-gray', 'nt-brown', 'nt-orange', 'nt-yellow', 'nt-green', 'nt-blue', 'nt-purple', 'nt-pink', 'nt-red',
@@ -3166,6 +3157,57 @@
           const tag = node.tagName.toUpperCase();
           if (tag === 'SCRIPT' || tag === 'STYLE' || tag === 'IFRAME' || tag === 'OBJECT' || tag === 'EMBED') {
             return null;
+          }
+
+          /* Migrate legacy <pre> code blocks into normal paragraphs */
+          if (tag === 'PRE') {
+            const p = document.createElement('p');
+            const rawText = node.textContent || '';
+            const lines = rawText.split(/\r?\n/);
+            lines.forEach((line, idx) => {
+              if (idx > 0) p.appendChild(document.createElement('br'));
+              p.appendChild(document.createTextNode(line));
+            });
+            if (!p.childNodes.length) p.appendChild(document.createElement('br'));
+            return p;
+          }
+
+          /* Migrate legacy toggle blocks into normal paragraphs */
+          if (node.classList && node.classList.contains('toggle-block')) {
+            const frag = document.createDocumentFragment();
+            const sum = node.querySelector('.toggle-summary');
+            const body = node.querySelector('.toggle-content');
+            if (sum && sum.textContent.trim()) {
+              const p1 = document.createElement('p');
+              const b = document.createElement('strong');
+              b.textContent = sum.textContent.trim();
+              p1.appendChild(b);
+              frag.appendChild(p1);
+            }
+            if (body && body.textContent.trim()) {
+              const p2 = document.createElement('p');
+              p2.textContent = body.textContent.trim();
+              frag.appendChild(p2);
+            }
+            return frag;
+          }
+
+          /* Unwrap any legacy block wrappers */
+          if (
+            tag === 'DIV' &&
+            node.classList &&
+            (node.classList.contains('block-wrapper') || node.classList.contains('notion-block') || node.hasAttribute('data-block-id')) &&
+            !node.classList.contains('callout-block') &&
+            !node.classList.contains('callout-body') &&
+            !node.classList.contains('checklist-item') &&
+            !node.classList.contains('attachment-block')
+          ) {
+            const frag = document.createDocumentFragment();
+            for (const c of Array.from(node.childNodes)) {
+              const cleaned = cleanNode(c);
+              if (cleaned) frag.appendChild(cleaned);
+            }
+            return frag;
           }
 
           if (!ALLOWED_TAGS.has(tag)) {
@@ -3230,7 +3272,11 @@
           }
 
           if (tag === 'BUTTON') {
-            if (!el.classList.contains('attachment-menu-btn') && !el.classList.contains('attachment-dl-btn')) {
+            if (
+              !el.classList.contains('attachment-menu-btn') &&
+              !el.classList.contains('attachment-menu-btn-inline') &&
+              !el.classList.contains('attachment-dl-btn')
+            ) {
               return null;
             }
             el.setAttribute('type', 'button');
@@ -3267,7 +3313,7 @@
               el.checked = true;
             }
             return el;
-          } else if (el.classList.contains('toggle-arrow') || el.classList.contains('callout-icon')) {
+          } else if (el.classList.contains('callout-icon')) {
             el.setAttribute('contenteditable', 'false');
           }
 
@@ -3275,6 +3321,20 @@
             const cleaned = cleanNode(c);
             if (cleaned) el.appendChild(cleaned);
           }
+
+          /* Ensure every attachment-block and hr in loaded HTML is followed by a paragraph */
+          if (el.classList.contains('attachment-block') || tag === 'HR') {
+            const frag = document.createDocumentFragment();
+            frag.appendChild(el);
+            const nextEl = node.nextElementSibling;
+            if (!nextEl || nextEl.tagName !== 'P') {
+              const p = document.createElement('p');
+              p.appendChild(document.createElement('br'));
+              frag.appendChild(p);
+            }
+            return frag;
+          }
+
           return el;
         }
 
@@ -3310,6 +3370,250 @@
         }
 
         return { toFragment, toSafeString, toPlainText };
+      })();
+
+      /* ======================================================================
+         Markdown Parser & Converter (Plain JS — No External Libraries)
+         ====================================================================== */
+      const MarkdownCodec = (() => {
+        const BLOCK_START_RE = /^(#{1,3}\s+|[-*+]\s+|\d+\.\s+|\[[ xX]?\]\s+|!>\s+|>>\s+|>\s+|---+\s*$|\*\*\*+\s*$|```)/;
+        const INLINE_HINT_RE = /(\*\*[^*\s][^*]*\*\*|\*[^*\s][^*]*\*|(?<![a-zA-Z0-9_])_[^_\s][^_]*_(?![a-zA-Z0-9_])|~~[^~\s][^~]*~~|`[^`]+`|==[^=\s][^=]*==|\[[^\]]+\]\((?:https?:\/\/|mailto:)[^)\s]+\))/;
+
+        function looksLikeMarkdown(text) {
+          if (!text || typeof text !== 'string') return false;
+          const lines = text.split(/\r?\n/);
+          for (const line of lines) {
+            if (BLOCK_START_RE.test(line)) return true;
+          }
+          return INLINE_HINT_RE.test(text);
+        }
+
+        function renderInlineToSafeHtml(rawText) {
+          if (!rawText) return '';
+          const placeholders = [];
+          const stash = (safeHtml) => {
+            const token = `\uE000${placeholders.length}\uE001`;
+            placeholders.push(safeHtml);
+            return token;
+          };
+
+          // 1. Protect escaped markdown punctuation (\*, \_, \~, \`, \=, \[, \], \\)
+          let s = String(rawText).replace(/\\([\\`*_{}\[\]()#+\-.!~=>])/g, (_, ch) => stash(escapeHtml(ch)));
+
+          // 2. Inline code `...`
+          s = s.replace(/`([^`\r\n]+)`/g, (_, codeTxt) => stash(`<code>${escapeHtml(codeTxt)}</code>`));
+
+          // 3. Links [label](https://... or mailto:...)
+          s = s.replace(/\[([^\]\r\n]+)\]\(((?:https?:\/\/|mailto:)[^)\s]+)\)/gi, (_, label, url) => {
+            return stash(
+              `<a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(label)}</a>`
+            );
+          });
+
+          // Escape remaining raw HTML characters before inline formatting
+          s = escapeHtml(s);
+
+          // 4. Bold **text**
+          s = s.replace(/\*\*([^\s*](?:[^*\r\n]*[^\s*])?)\*\*/g, '<strong>$1</strong>');
+
+          // 5. Yellow highlight ==text==
+          s = s.replace(/==([^\s=](?:[^=\r\n]*[^\s=])?)==/g, '<span data-bc="yellow">$1</span>');
+
+          // 6. Strikethrough ~~text~~
+          s = s.replace(/~~([^\s~](?:[^~\r\n]*[^\s~])?)~~/g, '<s>$1</s>');
+
+          // 7. Italic *text* (avoiding math like 2*3*4)
+          s = s.replace(/(?<![a-zA-Z0-9*])\*([^\s*](?:[^*\r\n]*[^\s*])?)\*(?![a-zA-Z0-9*])/g, '<em>$1</em>');
+
+          // 8. Italic _text_ (avoiding snake_case_words and URLs with underscores)
+          s = s.replace(/(?<![a-zA-Z0-9_])_([^\s_](?:[^_\r\n]*[^\s_])?)_(?![a-zA-Z0-9_])/g, '<em>$1</em>');
+
+          // Restore stashed tokens
+          s = s.replace(/\uE000(\d+)\uE001/g, (_, idx) => placeholders[Number(idx)] || '');
+          return s;
+        }
+
+        function markdownToSafeHtml(mdText) {
+          const lines = String(mdText || '').replace(/\r\n?/g, '\n').split('\n');
+          const out = [];
+          let i = 0;
+
+          const parseNestedList = (startIdx, baseIndent) => {
+            const firstLine = lines[startIdx];
+            const firstMatch = firstLine.match(/^(\s*)([-*+]|\d+\.)\s+(.*)$/);
+            if (!firstMatch) return { html: '', nextIdx: startIdx };
+
+            const isOrdered = /^\d+\.$/.test(firstMatch[2]);
+            const tag = isOrdered ? 'ol' : 'ul';
+            const items = [];
+            let idx = startIdx;
+
+            while (idx < lines.length) {
+              const cur = lines[idx];
+              if (!cur.trim()) break;
+              const m = cur.match(/^(\s*)([-*+]|\d+\.)\s+(.*)$/);
+              if (!m) break;
+              const indent = m[1].replace(/\t/g, '  ').length;
+              const itemOrdered = /^\d+\.$/.test(m[2]);
+              if (indent < baseIndent || (indent === baseIndent && itemOrdered !== isOrdered)) break;
+
+              if (indent > baseIndent) {
+                const nested = parseNestedList(idx, indent);
+                if (items.length > 0 && nested.html) {
+                  items[items.length - 1] += nested.html;
+                }
+                idx = nested.nextIdx;
+                continue;
+              }
+
+              // Check if it's a checklist item inside bullet syntax
+              const chk = m[3].match(/^\[([ xX]?)\]\s+(.*)$/);
+              if (!isOrdered && indent === 0 && chk) {
+                break;
+              }
+
+              items.push(renderInlineToSafeHtml(m[3]));
+              idx++;
+            }
+
+            const html = `<${tag}>${items.map((li) => `<li>${li}</li>`).join('')}</${tag}>`;
+            return { html, nextIdx: idx };
+          };
+
+          while (i < lines.length) {
+            const line = lines[i];
+
+            // Fenced code blocks -> convert to normal paragraphs keeping the text
+            if (/^\s*```/.test(line)) {
+              i++;
+              const codeLines = [];
+              while (i < lines.length && !/^\s*```/.test(lines[i])) {
+                codeLines.push(lines[i]);
+                i++;
+              }
+              if (i < lines.length && /^\s*```/.test(lines[i])) i++;
+              if (codeLines.length === 0) {
+                out.push('<p><br></p>');
+              } else {
+                codeLines.forEach((cl) => {
+                  out.push(`<p>${cl ? escapeHtml(cl) : '<br>'}</p>`);
+                });
+              }
+              continue;
+            }
+
+            // Blank line
+            if (!line.trim()) {
+              i++;
+              continue;
+            }
+
+            // Divider --- or ***
+            if (/^\s*(?:---+|\*\*\*+)\s*$/.test(line)) {
+              out.push('<hr><p><br></p>');
+              i++;
+              continue;
+            }
+
+            // Headings #, ##, ### (or ####+ clamped to H3)
+            const hMatch = line.match(/^(#{1,6})\s+(.*)$/);
+            if (hMatch) {
+              const lvl = Math.min(hMatch[1].length, 3);
+              out.push(`<h${lvl}>${renderInlineToSafeHtml(hMatch[2].trim()) || '<br>'}</h${lvl}>`);
+              i++;
+              continue;
+            }
+
+            // Checklist item: - [ ] / - [x] / [] / [ ] / [x]
+            const chkMatch = line.match(/^\s*(?:[-*+]\s+)?\[([ xX]?)\]\s+(.*)$/);
+            if (chkMatch) {
+              const checked = chkMatch[1].toLowerCase() === 'x';
+              const bodyHtml = renderInlineToSafeHtml(chkMatch[2]) || '<br>';
+              out.push(
+                `<div class="checklist-item${checked ? ' checked' : ''}"><input type="checkbox" class="checklist-box"${checked ? ' checked' : ''}><span class="checklist-text">${bodyHtml}</span></div>`
+              );
+              i++;
+              continue;
+            }
+
+            // Callout: !> text, >> text, or > 💡 text
+            const calloutMatch = line.match(/^\s*(?:!>|>>|>\s*💡)\s*(.*)$/);
+            if (calloutMatch) {
+              const calloutLines = [calloutMatch[1]];
+              i++;
+              while (i < lines.length) {
+                const cont = lines[i].match(/^\s*(?:!>|>>|>)\s+(.*)$/);
+                if (!cont) break;
+                calloutLines.push(cont[1]);
+                i++;
+              }
+              const bodyHtml = calloutLines.map((l) => renderInlineToSafeHtml(l)).join('<br>') || '<br>';
+              out.push(
+                `<div class="callout-block"><span class="callout-icon" contenteditable="false">💡</span><div class="callout-body">${bodyHtml}</div></div>`
+              );
+              continue;
+            }
+
+            // Quote: > text
+            const quoteMatch = line.match(/^\s*>\s?(.*)$/);
+            if (quoteMatch) {
+              const qLines = [quoteMatch[1]];
+              i++;
+              while (i < lines.length) {
+                const cont = lines[i].match(/^\s*>\s?(.*)$/);
+                if (!cont) break;
+                qLines.push(cont[1]);
+                i++;
+              }
+              const qHtml = qLines.map((l) => renderInlineToSafeHtml(l)).join('<br>') || '<br>';
+              out.push(`<blockquote>${qHtml}</blockquote>`);
+              continue;
+            }
+
+            // Bullet or Numbered list (with nesting)
+            if (/^\s*(?:[-*+]|\d+\.)\s+/.test(line)) {
+              const baseIndent = (line.match(/^(\s*)/)?.[1] || '').replace(/\t/g, '  ').length;
+              const parsedList = parseNestedList(i, baseIndent);
+              if (parsedList.html) {
+                out.push(parsedList.html);
+                i = parsedList.nextIdx;
+                continue;
+              }
+            }
+
+            // Standard paragraph
+            out.push(`<p>${renderInlineToSafeHtml(line) || '<br>'}</p>`);
+            i++;
+          }
+
+          return Sanitizer.toSafeString(out.join(''));
+        }
+
+        function extractTitleAndBodyFromMarkdown(mdText, fallbackTitle = 'Imported Note') {
+          const lines = String(mdText || '').replace(/\r\n?/g, '\n').split('\n');
+          let title = '';
+          let firstContentIdx = -1;
+          for (let i = 0; i < lines.length; i++) {
+            if (lines[i].trim()) {
+              firstContentIdx = i;
+              break;
+            }
+          }
+          if (firstContentIdx !== -1) {
+            const hMatch = lines[firstContentIdx].match(/^#{1,6}\s+(.*)$/);
+            if (hMatch && hMatch[1].trim()) {
+              title = hMatch[1].trim().slice(0, 200);
+              lines.splice(firstContentIdx, 1);
+            }
+          }
+          if (!title) {
+            title = (fallbackTitle || 'Imported Note').replace(/\.[^/.]+$/, '').trim().slice(0, 200) || 'Imported Note';
+          }
+          const bodyHtml = markdownToSafeHtml(lines.join('\n'));
+          return { title, content: bodyHtml };
+        }
+
+        return { looksLikeMarkdown, markdownToSafeHtml, extractTitleAndBodyFromMarkdown };
       })();
 
       /* ======================================================================
@@ -3350,10 +3654,9 @@
               content:
                 '<h2>Notion-style notebooks, right in one file</h2>' +
                 '<p>Tap into the title or body to reveal the formatting toolbar with <span data-tc="blue">Notion text colors</span> and <span data-bc="yellow">highlight colors</span>.</p>' +
-                '<div class="callout-block" data-bc="blue"><span class="callout-icon" contenteditable="false">💡</span><div class="callout-body">Type <code>/</code> anywhere to open the slash command menu, including <code>/page</code>, <code>/image</code>, or <code>/date</code>.</div></div>' +
+                '<div class="callout-block" data-bc="blue"><span class="callout-icon" contenteditable="false">💡</span><div class="callout-body">Write naturally like a continuous notebook—use live Markdown shortcuts like <code># </code>, <code>- </code>, <code>**bold**</code>, or <code>==highlight==</code>.</div></div>' +
                 '<h3>Nested Sub-pages</h3>' +
-                `<p><a class="subpage-link" data-page-id="${pSub1}" href="#${pSub1}" contenteditable="false"><span class="subpage-link-icon">🗺️</span><span class="subpage-link-title">Q4 Product Roadmap</span></a></p>` +
-                '<div class="toggle-block open"><div class="toggle-header"><span class="toggle-arrow" contenteditable="false">▶</span><span class="toggle-summary">Keyboard shortcuts &amp; tips</span></div><div class="toggle-content">Press Ctrl/Cmd+K to quick-search, Ctrl/Cmd+N for a new page, or drag pages in the tree to reorder and nest them.</div></div>'
+                `<p><a class="subpage-link" data-page-id="${pSub1}" href="#${pSub1}" contenteditable="false"><span class="subpage-link-icon">🗺️</span><span class="subpage-link-title">Q4 Product Roadmap</span></a></p>`
             },
             [pSub1]: {
               id: pSub1,
@@ -3394,8 +3697,7 @@
               updatedAt: now - 60000 * 40,
               content:
                 '<p>This is a <strong>Level 2 sub-page</strong>! Check the clickable breadcrumb trail at the top: <em>Product HQ › Welcome to Folio › Q4 Product Roadmap › Launch Day Checklist</em>.</p>' +
-                '<blockquote data-bc="purple">“Great software feels effortless because every detail was considered.”</blockquote>' +
-                '<pre><code># Final verification\nnpm run test &amp;&amp; npm run build</code></pre>'
+                '<blockquote data-bc="purple">“Great software feels effortless because every detail was considered.”</blockquote>'
             },
             [pDesign]: {
               id: pDesign,
@@ -3466,7 +3768,7 @@
             notebooks[nb.id] = {
               id: nb.id,
               name: nb.name.trim().slice(0, 60) || 'Untitled Notebook',
-              icon: typeof nb.icon === 'string' && nb.icon.trim() ? nb.icon.trim().slice(0, 4) : '📓',
+              icon: sanitizeEmoji(nb.icon, '📓'),
               order: typeof nb.order === 'number' && Number.isFinite(nb.order) ? nb.order : idx,
               createdAt: typeof nb.createdAt === 'number' ? nb.createdAt : Date.now(),
               updatedAt: typeof nb.updatedAt === 'number' ? nb.updatedAt : (typeof nb.createdAt === 'number' ? nb.createdAt : Date.now())
@@ -3486,7 +3788,7 @@
               notebookId: nbId,
               order: typeof p.order === 'number' && Number.isFinite(p.order) ? p.order : idx,
               title: typeof p.title === 'string' ? p.title.slice(0, 200) : '',
-              icon: typeof p.icon === 'string' && p.icon.trim() ? p.icon.trim().slice(0, 4) : '📄',
+              icon: sanitizeEmoji(p.icon, '📄'),
               cover: COVER_COLORS.includes(p.cover) ? p.cover : '',
               content: Sanitizer.toSafeString(typeof p.content === 'string' ? p.content : ''),
               tags: Array.isArray(p.tags)
@@ -3648,10 +3950,7 @@
         fontSize: Storage.loadFontSize(),
         mobileSidebarOpen: false,
         mobileEditorOpen: false,
-        history: new Map(),
         savedRange: null,
-        activeBlockEl: null,
-        slashState: null,
         isEditing: false,
         colorPanelOpen: false,
         headingMenuOpen: false,
@@ -3880,7 +4179,6 @@
             mergedTombstones.notebooks[id] = Math.max(mergedTombstones.notebooks[id] || 0, rTs);
           }
 
-          // Merge Notebooks (by updatedAt; respect tombstones)
           const mergedNotebooks = {};
           const allNbIds = new Set([...Object.keys(localData.notebooks), ...Object.keys(remoteData.notebooks)]);
           allNbIds.forEach((id) => {
@@ -3907,7 +4205,6 @@
           }
           const validNbIds = Object.keys(mergedNotebooks);
 
-          // Merge Pages (by updatedAt; respect tombstones; handle active editing conflict)
           const mergedPages = {};
           const conflictCopies = [];
           const allPageIds = new Set([...Object.keys(localData.pages), ...Object.keys(remoteData.pages)]);
@@ -4051,7 +4348,12 @@
               State.expanded = merged.expanded;
               await downloadMissingAttachments(State.pages);
               Storage.save(State, true);
-              Render.all();
+              if (State.isEditing) {
+                Render.sidebar();
+                Render.pageList();
+              } else {
+                Render.all();
+              }
             } else if (remote.status === 'ok') {
               shaToUse = remote.sha;
             }
@@ -4152,7 +4454,13 @@
 
               await downloadMissingAttachments(State.pages);
               Storage.save(State, true);
-              Render.all();
+              if (State.isEditing) {
+                deferredRemoteMerge = true;
+                Render.sidebar();
+                Render.pageList();
+              } else {
+                Render.all();
+              }
               showToast('Updated from another device');
             }
 
@@ -4379,7 +4687,7 @@
           flushDeferredMerge: () => {
             if (deferredRemoteMerge) {
               deferredRemoteMerge = null;
-              pullNow(true);
+              Render.editor();
             }
           }
         };
@@ -4603,7 +4911,7 @@
       })();
 
       /* ======================================================================
-         Markdown Exporter (Exports Page + All Sub-pages Recursively)
+         Markdown Exporter & Copy-as-Markdown Converter
          ====================================================================== */
       const MarkdownExporter = (() => {
         function nodeToMd(node, depth = 0) {
@@ -4614,11 +4922,10 @@
 
           if (node.classList.contains('attachment-block')) {
             const name = node.getAttribute('data-attach-name') || 'attachment';
-            const kind = node.getAttribute('data-attach-kind') || 'file';
-            return kind === 'image' ? `![${name}]()\n\n` : `[📎 ${name}]()\n\n`;
+            return `[${name}]\n\n`;
           }
           if (node.classList.contains('date-chip')) {
-            return `\`${node.textContent.trim()}\``;
+            return node.textContent.trim();
           }
           if (node.classList.contains('checklist-item')) {
             const cb = node.querySelector('input[type="checkbox"]');
@@ -4626,68 +4933,116 @@
             return `- [${cb && (cb.checked || cb.hasAttribute('checked')) ? 'x' : ' '}] ${(txt ? txt.textContent : inner()).trim()}\n`;
           }
           if (node.classList.contains('callout-block')) {
-            const ico = node.querySelector('.callout-icon')?.textContent || '💡';
-            const body = node.querySelector('.callout-body')?.textContent.trim() || '';
+            const ico = (node.querySelector('.callout-icon')?.textContent || '💡').trim() || '💡';
+            const body = (node.querySelector('.callout-body')?.textContent || '').replace(/\u200B/g, '').trim();
             return `> ${ico} ${body}\n\n`;
           }
-          if (node.classList.contains('toggle-block')) {
-            const sum = node.querySelector('.toggle-summary')?.textContent.trim() || '';
-            const body = node.querySelector('.toggle-content')?.textContent.trim() || '';
-            return `<details>\n<summary>${sum}</summary>\n\n${body}\n</details>\n\n`;
-          }
+
+          const isYellowHighlight = node.getAttribute('data-bc') === 'yellow' || node.classList.contains('nb-yellow');
+          const wrapHighlight = (content) => (isYellowHighlight && content ? `==${content}==` : content);
 
           switch (tag) {
             case 'H1': return `# ${inner().trim()}\n\n`;
             case 'H2': return `## ${inner().trim()}\n\n`;
             case 'H3': return `### ${inner().trim()}\n\n`;
-            case 'P': {
+            case 'P':
+            case 'DIV': {
               const txt = inner().replace(/\u200B/g, '').trim();
-              return txt ? `${txt}\n\n` : '';
+              return txt ? `${wrapHighlight(txt)}\n\n` : '';
             }
             case 'BR': return '\n';
-            case 'B': case 'STRONG': return `**${inner()}**`;
-            case 'I': case 'EM': return `*${inner()}*`;
-            case 'S': case 'STRIKE': return `~~${inner()}~~`;
-            case 'U': return `<u>${inner()}</u>`;
-            case 'CODE':
-              return node.parentElement && node.parentElement.tagName === 'PRE'
-                ? node.textContent || ''
-                : `\`${node.textContent || ''}\``;
-            case 'PRE': return `\n\`\`\`\n${(node.textContent || '').trimEnd()}\n\`\`\`\n\n`;
-            case 'BLOCKQUOTE': return inner().trim().split('\n').map((l) => `> ${l}`).join('\n') + '\n\n';
+            case 'B': case 'STRONG': return wrapHighlight(`**${inner()}**`);
+            case 'I': case 'EM': return wrapHighlight(`*${inner()}*`);
+            case 'S': case 'STRIKE': return wrapHighlight(`~~${inner()}~~`);
+            case 'U': return wrapHighlight(inner());
+            case 'SPAN': return wrapHighlight(inner());
+            case 'CODE': return `\`${node.textContent || ''}\``;
+            case 'BLOCKQUOTE': {
+              const lines = inner().replace(/\u200B/g, '').trim().split('\n');
+              return lines.map((l) => `> ${l}`).join('\n') + '\n\n';
+            }
             case 'HR': return `\n---\n\n`;
             case 'A': {
               const href = node.getAttribute('href') || '';
               return href.startsWith('#page_') ? `[[${inner().trim()}]]` : `[${inner().trim() || href}](${href})`;
             }
-            case 'UL':
-              return Array.from(node.children).filter((c) => c.tagName === 'LI')
-                .map((li) => `${'  '.repeat(depth)}- ${nodeToMd(li, depth + 1).trim()}`).join('\n') + '\n\n';
-            case 'OL':
-              return Array.from(node.children).filter((c) => c.tagName === 'LI')
-                .map((li, i) => `${'  '.repeat(depth)}${i + 1}. ${nodeToMd(li, depth + 1).trim()}`).join('\n') + '\n\n';
+            case 'UL': {
+              const lines = [];
+              Array.from(node.children).forEach((c) => {
+                if (c.tagName === 'LI') {
+                  lines.push(`${'  '.repeat(depth)}- ${renderListItemMd(c, depth)}`);
+                } else if (c.tagName === 'UL' || c.tagName === 'OL') {
+                  lines.push(nodeToMd(c, depth + 1).trimEnd());
+                }
+              });
+              return lines.join('\n') + (depth === 0 ? '\n\n' : '');
+            }
+            case 'OL': {
+              const lines = [];
+              let num = 1;
+              Array.from(node.children).forEach((c) => {
+                if (c.tagName === 'LI') {
+                  lines.push(`${'  '.repeat(depth)}${num++}. ${renderListItemMd(c, depth)}`);
+                } else if (c.tagName === 'UL' || c.tagName === 'OL') {
+                  lines.push(nodeToMd(c, depth + 1).trimEnd());
+                }
+              });
+              return lines.join('\n') + (depth === 0 ? '\n\n' : '');
+            }
             default: return inner();
           }
+        }
+
+        function renderListItemMd(li, depth) {
+          let ownParts = '';
+          const nestedParts = [];
+          Array.from(li.childNodes).forEach((child) => {
+            if (child.nodeType === Node.ELEMENT_NODE && (child.tagName === 'UL' || child.tagName === 'OL')) {
+              nestedParts.push(nodeToMd(child, depth + 1).trimEnd());
+            } else {
+              ownParts += nodeToMd(child, depth);
+            }
+          });
+          const head = ownParts.replace(/\u200B/g, '').trim();
+          return nestedParts.length ? `${head}\n${nestedParts.join('\n')}` : head;
+        }
+
+        function pageBodyToMarkdown(htmlContent) {
+          const wrap = document.createElement('div');
+          wrap.appendChild(Sanitizer.toFragment(stripTrailingEmptyParagraphsHtml(htmlContent)));
+          return Array.from(wrap.childNodes)
+            .map((n) => nodeToMd(n))
+            .join('')
+            .replace(/\n{3,}/g, '\n\n')
+            .trim();
+        }
+
+        function exportSinglePage(pageId) {
+          const page = State.pages[pageId];
+          if (!page) return '';
+          let out = `# ${page.title || 'Untitled'}\n\n`;
+          const body = pageBodyToMarkdown(page.content);
+          if (body) out += `${body}\n`;
+          return out;
         }
 
         function exportPageRecursive(pageId, level = 0) {
           const page = State.pages[pageId];
           if (!page) return '';
-          const wrap = document.createElement('div');
-          wrap.appendChild(Sanitizer.toFragment(stripTrailingEmptyParagraphsHtml(page.content)));
           const headingPrefix = '#'.repeat(Math.min(level + 1, 6));
-          let out = `${headingPrefix} ${page.icon} ${page.title || 'Untitled'}\n\n`;
+          let out = `${headingPrefix} ${page.title || 'Untitled'}\n\n`;
           if (page.tags.length) out += `Tags: ${page.tags.map((t) => `#${t}`).join(' ')}\n\n`;
-          out += Array.from(wrap.childNodes).map((n) => nodeToMd(n)).join('').replace(/\n{3,}/g, '\n\n').trim() + '\n\n';
+          const body = pageBodyToMarkdown(page.content);
+          if (body) out += `${body}\n\n`;
 
           const children = Tree.getChildren(page.notebookId, page.id);
           children.forEach((child) => {
             out += `---\n\n${exportPageRecursive(child.id, level + 1)}`;
           });
-          return out;
+          return out.replace(/\n{3,}/g, '\n\n').trim() + '\n';
         }
 
-        return { exportPageRecursive };
+        return { pageBodyToMarkdown, exportSinglePage, exportPageRecursive };
       })();
 
       /* ======================================================================
@@ -4719,6 +5074,7 @@
         tagsNavCloud: $('tagsNavCloud'),
         exportBackupBtn: $('exportBackupBtn'),
         importBackupBtn: $('importBackupBtn'),
+        markdownHelpBtn: $('markdownHelpBtn'),
         importFileInput: $('importFileInput'),
 
         mobileMenuBtn: $('mobileMenuBtn'),
@@ -4752,7 +5108,6 @@
         pageTitleInput: $('pageTitleInput'),
         pageTagsContainer: $('pageTagsContainer'),
         tagAddInput: $('tagAddInput'),
-        blockHandleBtn: $('blockHandleBtn'),
         editorSurface: $('editorSurface'),
         wordCount: $('wordCount'),
         charCount: $('charCount'),
@@ -4922,6 +5277,12 @@
             card.append(left, actions);
             blk.appendChild(card);
           }
+
+          if (!blk.nextElementSibling || !isEmptyParagraphElement(blk.nextElementSibling)) {
+            const p = document.createElement('p');
+            p.appendChild(document.createElement('br'));
+            blk.after(p);
+          }
         }
       }
 
@@ -4951,7 +5312,8 @@
             b.type = 'button';
             b.className = `popover-item${danger ? ' danger' : ''}`;
             b.textContent = label;
-            b.addEventListener('click', () => {
+            b.addEventListener('click', (e) => {
+              e.stopPropagation();
               Popover.close();
               fn();
             });
@@ -5039,18 +5401,20 @@
       }
 
       /* ======================================================================
-         Trailing 2 Empty Paragraphs Helpers
+         Trailing 2 Empty Paragraphs Helpers (Without Duplicating on Reload)
          ====================================================================== */
       function isEmptyParagraphElement(el) {
-        if (!el || el.nodeType !== Node.ELEMENT_NODE || el.tagName !== 'P') return false;
-        if (el.querySelector('img, input, hr, svg, a, code, pre, blockquote, .attachment-block')) return false;
+        if (!el || el.nodeType !== Node.ELEMENT_NODE) return false;
+        if (el.tagName !== 'P' && el.tagName !== 'DIV') return false;
+        if (el.classList.length > 0) return false;
+        if (el.querySelector('img, input, hr, svg, a, code, blockquote, .attachment-block, .date-chip')) return false;
         const txt = (el.textContent || '').replace(/[\u200B\u00A0\s]/g, '');
         return txt.length === 0;
       }
 
       function stripTrailingEmptyParagraphsHtml(html) {
         const div = document.createElement('div');
-        div.appendChild(Sanitizer.toFragment(html));
+        div.innerHTML = html || '';
         while (div.lastElementChild && isEmptyParagraphElement(div.lastElementChild)) {
           div.lastElementChild.remove();
         }
@@ -5075,6 +5439,66 @@
           surfaceEl.appendChild(p);
           trailingCount++;
         }
+      }
+
+      /* ======================================================================
+         Markdown Cheat Sheet Modal
+         ====================================================================== */
+      function openMarkdownHelpModal() {
+        const shortcuts = [
+          { syntax: '# / ## / ### + Space', desc: 'Heading 1, 2, 3' },
+          { syntax: '- / * / + + Space', desc: 'Bullet list' },
+          { syntax: '1. + Space', desc: 'Numbered list' },
+          { syntax: '[] / [ ] / [x] + Space', desc: 'Checklist (unchecked / checked)' },
+          { syntax: '> + Space', desc: 'Quote' },
+          { syntax: '!> / >> + Space', desc: 'Callout (💡)' },
+          { syntax: '--- / *** + Enter', desc: 'Divider' },
+          { syntax: '**text**', desc: 'Bold' },
+          { syntax: '*text* or _text_', desc: 'Italic' },
+          { syntax: '~~text~~', desc: 'Strikethrough' },
+          { syntax: '`code`', desc: 'Inline code' },
+          { syntax: '[label](https://url)', desc: 'Link' },
+          { syntax: '==text==', desc: 'Yellow highlight' },
+          { syntax: '\\*escaped\\*', desc: 'Prevent formatting' },
+          { syntax: 'Backspace', desc: 'Undo last Markdown conversion' }
+        ];
+
+        Modal.open({
+          title: 'Markdown Shortcuts',
+          message: 'Type these shortcuts directly in the editor:',
+          hideActions: true,
+          renderBody: (body) => {
+            const list = document.createElement('div');
+            list.className = 'md-help-list';
+
+            shortcuts.forEach((item) => {
+              const row = document.createElement('div');
+              row.className = 'md-help-row';
+
+              const code = document.createElement('code');
+              code.className = 'md-help-code';
+              code.textContent = item.syntax;
+
+              const desc = document.createElement('span');
+              desc.className = 'md-help-desc';
+              desc.textContent = item.desc;
+
+              row.append(code, desc);
+              list.appendChild(row);
+            });
+
+            const actions = document.createElement('div');
+            actions.className = 'modal-actions';
+            const closeBtn = document.createElement('button');
+            closeBtn.type = 'button';
+            closeBtn.className = 'btn-primary';
+            closeBtn.textContent = 'Got it';
+            closeBtn.addEventListener('click', () => Modal.close());
+            actions.appendChild(closeBtn);
+
+            body.append(list, actions);
+          }
+        });
       }
 
       /* ======================================================================
@@ -5144,6 +5568,7 @@
           if (!page || page.trashed) return;
           State.isEditing = true;
           position();
+          Editor.syncToolbarStateThrottled();
         }
 
         function hide() {
@@ -5480,7 +5905,7 @@
       })();
 
       /* ======================================================================
-         Settings Sheet (Font, Font Size, Theme, App Install, GitHub Sync, Export, Import)
+         Settings Sheet (Font, Font Size, Theme, App Install, GitHub Sync, Export, Import, Markdown)
          ====================================================================== */
       const SettingsSheet = (() => {
         function render() {
@@ -5583,6 +6008,11 @@
           }
           if (DOM.syncDisconnectBtn) {
             DOM.syncDisconnectBtn.addEventListener('click', () => GitHubSync.disconnect());
+          }
+          if (DOM.markdownHelpBtn) {
+            DOM.markdownHelpBtn.addEventListener('click', () => {
+              openMarkdownHelpModal();
+            });
           }
         }
 
@@ -5799,15 +6229,17 @@
       })();
 
       const Popover = (() => {
+        let openedAt = 0;
+
         function close() {
           if (!DOM.popoverMenu) return;
           DOM.popoverMenu.classList.remove('open');
           DOM.popoverMenu.replaceChildren();
-          State.slashState = null;
         }
 
         function openAt(anchorRect, buildFn) {
           if (!DOM.popoverMenu) return;
+          openedAt = Date.now();
           DOM.popoverMenu.replaceChildren();
           buildFn(DOM.popoverMenu);
           DOM.popoverMenu.classList.add('open');
@@ -5815,17 +6247,27 @@
           const menuRect = DOM.popoverMenu.getBoundingClientRect();
           const vw = window.innerWidth;
           const vh = window.innerHeight;
-          let left = anchorRect.left;
-          let top = anchorRect.bottom + 6;
+          const safeAnchor = anchorRect || { left: 16, top: 64, bottom: 64, right: 16 };
+          let left = safeAnchor.left;
+          let top = safeAnchor.bottom + 6;
 
           if (left + menuRect.width > vw - 10) left = Math.max(10, vw - menuRect.width - 10);
-          if (top + menuRect.height > vh - 10) top = Math.max(10, anchorRect.top - menuRect.height - 6);
+          if (top + menuRect.height > vh - 10) top = Math.max(10, safeAnchor.top - menuRect.height - 6);
 
           DOM.popoverMenu.style.left = `${Math.max(8, left)}px`;
           DOM.popoverMenu.style.top = `${Math.max(8, top)}px`;
         }
 
-        return { openAt, close, isOpen: () => DOM.popoverMenu && DOM.popoverMenu.classList.contains('open') };
+        function wasJustOpened() {
+          return Date.now() - openedAt < 80;
+        }
+
+        return {
+          openAt,
+          close,
+          isOpen: () => Boolean(DOM.popoverMenu && DOM.popoverMenu.classList.contains('open')),
+          wasJustOpened
+        };
       })();
 
       function createHighlightedFragment(text, query) {
@@ -5855,7 +6297,7 @@
       }
 
       /* ======================================================================
-         Theme, Font & History Managers
+         Theme & Font Managers
          ====================================================================== */
       function applyTheme(theme) {
         const resolved = THEMES.includes(theme) ? theme : 'light';
@@ -5882,71 +6324,6 @@
         document.documentElement.style.setProperty('--app-font-size', opt.px);
         Storage.saveFontSize(opt.id);
       }
-
-      const History = (() => {
-        function getStack(pageId) {
-          if (!State.history.has(pageId)) State.history.set(pageId, { undo: [], redo: [] });
-          return State.history.get(pageId);
-        }
-
-        function init(page) {
-          if (!page) return;
-          const stack = getStack(page.id);
-          if (stack.undo.length === 0) stack.undo.push(page.content);
-          updateButtons(page.id);
-        }
-
-        function push(pageId, html) {
-          if (!pageId) return;
-          const stack = getStack(pageId);
-          if (stack.undo[stack.undo.length - 1] === html) return;
-          stack.undo.push(html);
-          if (stack.undo.length > MAX_HISTORY) stack.undo.shift();
-          stack.redo = [];
-          updateButtons(pageId);
-        }
-
-        function undo(page) {
-          if (!page || page.trashed) return;
-          const stack = getStack(page.id);
-          if (stack.undo.length <= 1) return;
-          stack.redo.push(stack.undo.pop());
-          applySnapshot(page, stack.undo[stack.undo.length - 1]);
-          updateButtons(page.id);
-        }
-
-        function redo(page) {
-          if (!page || page.trashed) return;
-          const stack = getStack(page.id);
-          if (stack.redo.length === 0) return;
-          const next = stack.redo.pop();
-          stack.undo.push(next);
-          applySnapshot(page, next);
-          updateButtons(page.id);
-        }
-
-        async function applySnapshot(page, html) {
-          page.content = Sanitizer.toSafeString(stripTrailingEmptyParagraphsHtml(html));
-          page.updatedAt = Date.now();
-          if (DOM.editorSurface) {
-            DOM.editorSurface.replaceChildren(Sanitizer.toFragment(page.content));
-            ensureTwoTrailingEmptyParagraphs(DOM.editorSurface);
-            await hydrateAttachmentBlocks(DOM.editorSurface);
-          }
-          Storage.save(State);
-          Render.updateStats();
-          Render.pageList();
-          if (DOM.saveStatus) DOM.saveStatus.textContent = 'Saved';
-        }
-
-        function updateButtons(pageId) {
-          const stack = pageId ? getStack(pageId) : { undo: [], redo: [] };
-          if (DOM.ktbUndoBtn) DOM.ktbUndoBtn.disabled = stack.undo.length <= 1;
-          if (DOM.ktbRedoBtn) DOM.ktbRedoBtn.disabled = stack.redo.length === 0;
-        }
-
-        return { init, push, undo, redo, updateButtons };
-      })();
 
       /* ======================================================================
          Core Page & Notebook Operations
@@ -6273,11 +6650,9 @@
             const now = Date.now();
             State.tombstones.pages[pageId] = now;
             delete State.pages[pageId];
-            State.history.delete(pageId);
             descendants.forEach((d) => {
               State.tombstones.pages[d.id] = now;
               delete State.pages[d.id];
-              State.history.delete(d.id);
             });
             Storage.save(State);
             if (!State.pages[State.activePageId]) {
@@ -6290,6 +6665,32 @@
             showToast('Deleted permanently');
           }
         });
+      }
+
+      async function copyPageAsMarkdown(pageId) {
+        saveActivePageNow();
+        const md = MarkdownExporter.exportSinglePage(pageId);
+        if (!md) return;
+        try {
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            await navigator.clipboard.writeText(md);
+            showToast('Copied page as Markdown');
+            return;
+          }
+        } catch { /* fallback below */ }
+        try {
+          const ta = document.createElement('textarea');
+          ta.value = md;
+          ta.style.position = 'fixed';
+          ta.style.opacity = '0';
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          ta.remove();
+          showToast('Copied page as Markdown');
+        } catch {
+          showToast('Could not copy Markdown');
+        }
       }
 
       function openPageContextMenu(pageId, anchorRect) {
@@ -6305,7 +6706,8 @@
             btn.className = `popover-item${danger ? ' danger' : ''}`;
             btn.textContent = label;
             btn.disabled = disabled;
-            btn.addEventListener('click', () => {
+            btn.addEventListener('click', (e) => {
+              e.stopPropagation();
               Popover.close();
               onClick();
             });
@@ -6320,6 +6722,16 @@
 
           if (!page.trashed) {
             addItem('➕ Add sub-page', () => createPage({ notebookId: page.notebookId, parentId: page.id }));
+            addItem('😀 Change icon', () => {
+              setTimeout(() => {
+                openEmojiPicker(anchorRect, (emoji) => {
+                  page.icon = emoji;
+                  page.updatedAt = Date.now();
+                  Storage.save(State);
+                  Render.all();
+                }, '📄');
+              }, 0);
+            });
             addItem('✏️ Rename', () => {
               let inp = null;
               Modal.open({
@@ -6367,6 +6779,7 @@
               Render.all();
               showToast(page.archived ? 'Archived' : 'Unarchived');
             });
+            addItem('📋 Copy as Markdown', () => copyPageAsMarkdown(page.id));
             addItem('⬇️ Export as .md', () => exportPageMarkdown(page.id));
             addDiv();
             addItem('🗑️ Move to Trash', () => trashPageWithChildren(page.id), true);
@@ -6390,7 +6803,8 @@
             btn.className = `popover-item${danger ? ' danger' : ''}`;
             btn.textContent = label;
             btn.disabled = disabled;
-            btn.addEventListener('click', () => {
+            btn.addEventListener('click', (e) => {
+              e.stopPropagation();
               Popover.close();
               onClick();
             });
@@ -6398,12 +6812,16 @@
           };
 
           addItem('➕ New page in notebook', () => createPage({ notebookId: nb.id, parentId: null }));
-          addItem('😀 Change icon', () => openEmojiPicker(anchorRect, (emoji) => {
-            nb.icon = emoji;
-            nb.updatedAt = Date.now();
-            Storage.save(State);
-            Render.all();
-          }));
+          addItem('😀 Change icon', () => {
+            setTimeout(() => {
+              openEmojiPicker(anchorRect, (emoji) => {
+                nb.icon = emoji;
+                nb.updatedAt = Date.now();
+                Storage.save(State);
+                Render.all();
+              }, '📓');
+            }, 0);
+          });
           addItem('✏️ Rename notebook', () => {
             let inp = null;
             Modal.open({
@@ -6484,7 +6902,7 @@
         });
       }
 
-      function openEmojiPicker(anchorRect, onSelect) {
+      function openEmojiPicker(anchorRect, onSelect, defaultEmoji = '📓') {
         Popover.openAt(anchorRect, (menu) => {
           const title = document.createElement('div');
           title.className = 'popover-section-title';
@@ -6496,13 +6914,28 @@
             btn.type = 'button';
             btn.className = 'emoji-opt';
             btn.textContent = em;
-            btn.addEventListener('click', () => {
+            btn.addEventListener('click', (e) => {
+              e.stopPropagation();
               Popover.close();
               onSelect(em);
             });
             grid.appendChild(btn);
           });
-          menu.append(title, grid);
+
+          const div = document.createElement('div');
+          div.className = 'popover-divider';
+
+          const resetBtn = document.createElement('button');
+          resetBtn.type = 'button';
+          resetBtn.className = 'popover-item';
+          resetBtn.textContent = `${defaultEmoji} Remove icon / Reset`;
+          resetBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            Popover.close();
+            onSelect(defaultEmoji);
+          });
+
+          menu.append(title, grid, div, resetBtn);
         });
       }
 
@@ -6521,7 +6954,8 @@
             btn.className = 'notion-color-btn';
             btn.style.background = `var(--cover-${c})`;
             btn.title = c;
-            btn.addEventListener('click', () => {
+            btn.addEventListener('click', (e) => {
+              e.stopPropagation();
               page.cover = c;
               page.updatedAt = Date.now();
               Storage.save(State);
@@ -6551,6 +6985,20 @@
       }
 
       const Render = (() => {
+        function updatePageTitleInLists(pageId, newTitle) {
+          const display = newTitle || 'Untitled';
+          document.querySelectorAll(`.tree-row[data-drag-type="page"][data-id="${pageId}"] .tree-title`).forEach((el) => {
+            el.textContent = display;
+          });
+          if (DOM.breadcrumbsBar) {
+            const curCrumb = DOM.breadcrumbsBar.querySelector('.crumb-btn.current');
+            const page = State.pages[pageId];
+            if (curCrumb && page) {
+              curCrumb.textContent = `${page.icon || '📄'} ${display}`;
+            }
+          }
+        }
+
         function sidebar() {
           const allPages = Object.values(State.pages);
           const active = allPages.filter((p) => !p.trashed && !p.archived);
@@ -6969,9 +7417,7 @@
             syncSubpageLinksInEditor();
             await hydrateAttachmentBlocks(DOM.editorSurface);
           }
-          if (DOM.blockHandleBtn) DOM.blockHandleBtn.classList.remove('visible');
 
-          History.init(page);
           updateStats();
           updateToolbarColorIndicator();
         }
@@ -7036,7 +7482,7 @@
           editor();
         }
 
-        return { sidebar, pageList, editor, renderPageTags, updateStats, all };
+        return { sidebar, pageList, editor, renderPageTags, updateStats, updatePageTitleInLists, all };
       })();
 
       function selectPage(pageId, openMobile = false) {
@@ -7052,7 +7498,7 @@
       }
 
       /* ======================================================================
-         Auto-Save (Debounced)
+         Auto-Save (500ms Debounce — Never Touches editorSurface.innerHTML)
          ====================================================================== */
       function serializeEditor() {
         if (!DOM.editorSurface) return '';
@@ -7063,10 +7509,11 @@
         clone.querySelectorAll('.attachment-block').forEach((blk) => {
           blk.replaceChildren();
         });
-        return stripTrailingEmptyParagraphsHtml(clone.innerHTML);
+        const cleanHtml = Sanitizer.toSafeString(clone.innerHTML);
+        return stripTrailingEmptyParagraphsHtml(cleanHtml);
       }
 
-      function saveActivePageNow() {
+      function saveActivePageNow(updateLists = true) {
         const page = getActivePage();
         if (!page || page.trashed) return;
         if (DOM.pageTitleInput) page.title = DOM.pageTitleInput.value.slice(0, 200);
@@ -7075,23 +7522,33 @@
         const ok = Storage.save(State);
         if (DOM.saveStatus) DOM.saveStatus.textContent = ok ? 'Saved' : 'Storage full';
         Render.updateStats();
-        Render.sidebar();
-        Render.pageList();
+        if (updateLists) {
+          Render.sidebar();
+          Render.pageList();
+        }
       }
 
       const debouncedSave = debounce(() => {
-        const page = getActivePage();
-        if (!page || page.trashed) return;
-        saveActivePageNow();
-        History.push(page.id, page.content);
-      }, 420);
+        saveActivePageNow(false);
+      }, 500);
 
       /* ======================================================================
-         Rich Text Editor, Block Conversions, Colors & Slash Menu
+         Continuous Notebook Editor Engine + Live Markdown Shortcuts
          ====================================================================== */
       const Editor = (() => {
         let lastEmptyEnterTs = 0;
         let lastEmptyEnterBlock = null;
+        let lastMdConversion = null; // { pageId, rawText, expiresAt }
+
+        function normalizeSmartChars(str) {
+          return String(str || '')
+            .replace(/[\u2018\u2019]/g, "'")
+            .replace(/[\u201C\u201D]/g, '"')
+            .replace(/\u2014/g, '--')
+            .replace(/\u2013/g, '-')
+            .replace(/\u2026/g, '...')
+            .replace(/\u00A0/g, ' ');
+        }
 
         function getTopLevelBlock(node) {
           if (!DOM.editorSurface || !node || !DOM.editorSurface.contains(node)) return null;
@@ -7166,10 +7623,6 @@
             if (txt) {
               while (txt.firstChild) frag.appendChild(txt.firstChild);
             }
-          } else if (el.tagName === 'PRE') {
-            const code = el.querySelector('code');
-            const src = code || el;
-            while (src.firstChild) frag.appendChild(src.firstChild);
           } else {
             while (el.firstChild) frag.appendChild(el.firstChild);
           }
@@ -7244,7 +7697,6 @@
           const anchorNode = sel && sel.rangeCount ? sel.anchorNode : null;
           let blk = getTopLevelBlock(anchorNode);
           const currentType = getCurrentBlockType();
-
           const resolvedType = targetType === currentType && targetType !== 'text' ? 'text' : targetType;
 
           if (!blk || blk.classList.contains('attachment-block')) {
@@ -7265,10 +7717,16 @@
                 return;
               }
             }
-            if (blk.classList.contains('checklist-item') || blk.classList.contains('callout-block') || blk.tagName === 'BLOCKQUOTE' || blk.tagName === 'PRE') {
+            if (blk.classList.contains('checklist-item') || blk.classList.contains('callout-block') || blk.tagName === 'BLOCKQUOTE') {
               convertBlockToParagraph(blk, false);
               return;
             }
+            try {
+              document.execCommand('formatBlock', false, 'P');
+              onChanged(true);
+              syncToolbarStateThrottled();
+              return;
+            } catch { /* fallback below */ }
           }
 
           if (resolvedType === 'callout') {
@@ -7287,21 +7745,38 @@
           } else {
             const tagMap = { text: 'p', h1: 'h1', h2: 'h2', h3: 'h3', quote: 'blockquote' };
             const newTag = tagMap[resolvedType] || 'p';
-            const newEl = document.createElement(newTag);
-            newEl.appendChild(extractInnerFrag(blk));
-            blk.replaceWith(newEl);
-            placeCaretAtEnd(newEl);
+            try {
+              document.execCommand('formatBlock', false, `<${newTag}>`);
+              const afterSel = window.getSelection();
+              const afterBlk = afterSel && afterSel.rangeCount ? getTopLevelBlock(afterSel.anchorNode) : null;
+              if (!afterBlk || afterBlk.tagName.toLowerCase() !== newTag) {
+                const newEl = document.createElement(newTag);
+                newEl.appendChild(extractInnerFrag(blk));
+                blk.replaceWith(newEl);
+                placeCaretAtEnd(newEl);
+              }
+            } catch {
+              const newEl = document.createElement(newTag);
+              newEl.appendChild(extractInnerFrag(blk));
+              blk.replaceWith(newEl);
+              placeCaretAtEnd(newEl);
+            }
           }
 
           onChanged(true);
+          syncToolbarStateThrottled();
         }
 
-        function createChecklistBlock(text = '') {
+        function createChecklistBlock(text = '', checked = false) {
           const div = document.createElement('div');
-          div.className = 'checklist-item';
+          div.className = `checklist-item${checked ? ' checked' : ''}`;
           const cb = document.createElement('input');
           cb.type = 'checkbox';
           cb.className = 'checklist-box';
+          if (checked) {
+            cb.checked = true;
+            cb.setAttribute('checked', '');
+          }
           const span = document.createElement('span');
           span.className = 'checklist-text';
           if (text) span.textContent = text;
@@ -7323,42 +7798,6 @@
           else body.appendChild(document.createElement('br'));
           div.append(ico, body);
           return div;
-        }
-
-        function createToggleBlock(summaryText = 'Toggle heading') {
-          const div = document.createElement('div');
-          div.className = 'toggle-block open';
-          const header = document.createElement('div');
-          header.className = 'toggle-header';
-          const arrow = document.createElement('span');
-          arrow.className = 'toggle-arrow';
-          arrow.setAttribute('contenteditable', 'false');
-          arrow.textContent = '▶';
-          const sum = document.createElement('span');
-          sum.className = 'toggle-summary';
-          sum.textContent = summaryText;
-          header.append(arrow, sum);
-          const content = document.createElement('div');
-          content.className = 'toggle-content';
-          content.textContent = 'Hidden details...';
-          div.append(header, content);
-          return div;
-        }
-
-        function createSubpageLinkEl(subpage) {
-          const a = document.createElement('a');
-          a.className = 'subpage-link';
-          a.setAttribute('data-page-id', subpage.id);
-          a.setAttribute('href', `#${subpage.id}`);
-          a.setAttribute('contenteditable', 'false');
-          const ico = document.createElement('span');
-          ico.className = 'subpage-link-icon';
-          ico.textContent = subpage.icon || '📄';
-          const ttl = document.createElement('span');
-          ttl.className = 'subpage-link-title';
-          ttl.textContent = subpage.title || 'Untitled';
-          a.append(ico, ttl);
-          return a;
         }
 
         function insertBlock(node, focusEl = null, addTrailingParagraph = false) {
@@ -7389,16 +7828,516 @@
           insertBlock(attachBlock, null, true);
         }
 
-        function insertSubpageCommand() {
-          const parent = getActivePage();
-          if (!parent || parent.trashed) return;
-          const sub = createPage({ notebookId: parent.notebookId, parentId: parent.id, title: 'New Sub-page', open: false });
-          if (!sub) return;
-          const p = document.createElement('p');
-          p.appendChild(createSubpageLinkEl(sub));
-          insertBlock(p, null, true);
-          Render.editor();
-          showToast('Sub-page created and linked');
+        /* ====================================================================
+           Live Markdown Shortcuts (Block & Inline + Backspace Undo)
+           ==================================================================== */
+        function recordMarkdownUndo(rawText, convertedEl, extraNode = null) {
+          const page = getActivePage();
+          if (!page) return;
+          lastMdConversion = {
+            pageId: page.id,
+            rawText,
+            convertedEl,
+            extraNode,
+            expiresAt: Date.now() + 12000
+          };
+        }
+
+        function tryUndoLastMarkdownConversion(e) {
+          if (!lastMdConversion || !DOM.editorSurface) return false;
+          const page = getActivePage();
+          if (!page || page.id !== lastMdConversion.pageId || Date.now() > lastMdConversion.expiresAt) {
+            lastMdConversion = null;
+            return false;
+          }
+
+          const { rawText, convertedEl, extraNode } = lastMdConversion;
+          if (!convertedEl || !DOM.editorSurface.contains(convertedEl)) {
+            lastMdConversion = null;
+            return false;
+          }
+
+          const sel = window.getSelection();
+          if (!sel || !sel.rangeCount || !sel.isCollapsed) return false;
+          const range = sel.getRangeAt(0);
+          const curBlock = getTopLevelBlock(sel.anchorNode);
+
+          // Case 1: Block shortcut undo when caret is at start of converted block (or inside empty trailing p after <hr>)
+          const isDividerUndo =
+            convertedEl.tagName === 'HR' &&
+            extraNode &&
+            curBlock === extraNode &&
+            isCaretAtStartOf(extraNode, range);
+
+          const isBlockUndo =
+            !isDividerUndo &&
+            curBlock === convertedEl &&
+            (convertedEl.tagName === 'H1' ||
+              convertedEl.tagName === 'H2' ||
+              convertedEl.tagName === 'H3' ||
+              convertedEl.tagName === 'UL' ||
+              convertedEl.tagName === 'OL' ||
+              convertedEl.tagName === 'BLOCKQUOTE' ||
+              convertedEl.classList.contains('checklist-item') ||
+              convertedEl.classList.contains('callout-block')) &&
+            isCaretAtStartOf(
+              convertedEl.classList.contains('checklist-item')
+                ? convertedEl.querySelector('.checklist-text') || convertedEl
+                : convertedEl.classList.contains('callout-block')
+                ? convertedEl.querySelector('.callout-body') || convertedEl
+                : convertedEl,
+              range
+            );
+
+          if (isDividerUndo || isBlockUndo) {
+            e.preventDefault();
+            lastMdConversion = null;
+            const p = document.createElement('p');
+            const existingText = isDividerUndo ? '' : (convertedEl.textContent || '').replace(/\u200B/g, '');
+            const combined = rawText + existingText;
+            p.textContent = combined;
+            if (extraNode && DOM.editorSurface.contains(extraNode)) extraNode.remove();
+            convertedEl.replaceWith(p);
+            placeCaretAtEnd(p);
+            onChanged(true);
+            return true;
+          }
+
+          // Case 2: Inline shortcut undo when caret is right after convertedEl (or its trailing space/char)
+          if (
+            convertedEl.tagName === 'STRONG' ||
+            convertedEl.tagName === 'EM' ||
+            convertedEl.tagName === 'S' ||
+            convertedEl.tagName === 'CODE' ||
+            convertedEl.tagName === 'A' ||
+            convertedEl.getAttribute('data-bc') === 'yellow'
+          ) {
+            const sc = range.startContainer;
+            const so = range.startOffset;
+            let trailingChar = '';
+            let matchesPosition = false;
+
+            if (sc.nodeType === Node.TEXT_NODE && sc.previousSibling === convertedEl && so <= 1) {
+              trailingChar = sc.textContent.slice(0, so);
+              matchesPosition = true;
+            } else if (sc.nodeType === Node.ELEMENT_NODE && sc.childNodes[so - 1] === convertedEl) {
+              matchesPosition = true;
+            } else if (convertedEl.contains(sc)) {
+              const afterCheck = document.createRange();
+              afterCheck.selectNodeContents(convertedEl);
+              afterCheck.setStart(sc, so);
+              if (afterCheck.toString().replace(/\u200B/g, '').length === 0) {
+                matchesPosition = true;
+              }
+            }
+
+            if (matchesPosition) {
+              e.preventDefault();
+              lastMdConversion = null;
+              const txtNode = document.createTextNode(rawText + trailingChar);
+              if (sc.nodeType === Node.TEXT_NODE && sc.previousSibling === convertedEl && so <= 1) {
+                sc.textContent = sc.textContent.slice(so);
+              }
+              convertedEl.replaceWith(txtNode);
+              const r = document.createRange();
+              r.setStart(txtNode, txtNode.textContent.length);
+              r.collapse(true);
+              sel.removeAllRanges();
+              sel.addRange(r);
+              State.savedRange = r.cloneRange();
+              onChanged(true);
+              return true;
+            }
+          }
+
+          return false;
+        }
+
+        function checkBlockShortcutOnSpace() {
+          const sel = window.getSelection();
+          if (!sel || !sel.rangeCount || !sel.isCollapsed || !DOM.editorSurface) return false;
+          const anchor = sel.anchorNode;
+          if (!anchor || anchor.nodeType !== Node.TEXT_NODE || !DOM.editorSurface.contains(anchor)) return false;
+
+          const anchorEl = anchor.parentElement;
+          if (anchorEl && anchorEl.closest('code, a, .date-chip, .attachment-block, .callout-block, .checklist-item, blockquote, h1, h2, h3, li')) {
+            return false;
+          }
+
+          const block = getTopLevelBlock(anchor);
+          if (!block || (block.tagName !== 'P' && block.tagName !== 'DIV')) return false;
+
+          // Ensure nothing precedes this text node in the paragraph
+          const preRange = document.createRange();
+          preRange.selectNodeContents(block);
+          preRange.setEnd(anchor, sel.anchorOffset);
+          const rawBefore = preRange.toString().replace(/\u200B/g, '');
+          const normBefore = normalizeSmartChars(rawBefore);
+          const restText = anchor.textContent.slice(sel.anchorOffset);
+
+          const applyBlockConversion = (newEl, focusTarget = null) => {
+            if (block !== DOM.editorSurface) block.replaceWith(newEl);
+            else anchor.parentNode.replaceChild(newEl, anchor);
+            placeCaretAtStart(focusTarget || newEl);
+            recordMarkdownUndo(rawBefore, newEl);
+            onChanged(true);
+            syncToolbarStateThrottled();
+            return true;
+          };
+
+          // Headings: "# ", "## ", "### "
+          const hMatch = normBefore.match(/^(#{1,3}) $/);
+          if (hMatch) {
+            const h = document.createElement(`h${hMatch[1].length}`);
+            if (restText) h.textContent = restText;
+            else h.appendChild(document.createElement('br'));
+            return applyBlockConversion(h);
+          }
+
+          // Bullet list: "- ", "* ", "+ "
+          if (/^[-*+] $/.test(normBefore)) {
+            const ul = document.createElement('ul');
+            const li = document.createElement('li');
+            if (restText) li.textContent = restText;
+            else li.appendChild(document.createElement('br'));
+            ul.appendChild(li);
+            return applyBlockConversion(ul, li);
+          }
+
+          // Numbered list: "1. " (any number)
+          if (/^\d+\. $/.test(normBefore)) {
+            const ol = document.createElement('ol');
+            const li = document.createElement('li');
+            if (restText) li.textContent = restText;
+            else li.appendChild(document.createElement('br'));
+            ol.appendChild(li);
+            return applyBlockConversion(ol, li);
+          }
+
+          // Checklist: "[] ", "[ ] ", "[x] ", "[X] "
+          const chkMatch = normBefore.match(/^\[([ xX]?)\] $/);
+          if (chkMatch) {
+            const isChecked = chkMatch[1].toLowerCase() === 'x';
+            const item = createChecklistBlock(restText, isChecked);
+            return applyBlockConversion(item, item.querySelector('.checklist-text'));
+          }
+
+          // Callout: "!> " or ">> "
+          if (/^(?:!>|>>) $/.test(normBefore)) {
+            const callout = createCalloutBlock(restText);
+            return applyBlockConversion(callout, callout.querySelector('.callout-body'));
+          }
+
+          // Quote: "> "
+          if (normBefore === '> ') {
+            const bq = document.createElement('blockquote');
+            if (restText) bq.textContent = restText;
+            else bq.appendChild(document.createElement('br'));
+            return applyBlockConversion(bq);
+          }
+
+          return false;
+        }
+
+        function checkBlockShortcutOnEnter(e) {
+          const sel = window.getSelection();
+          if (!sel || !sel.rangeCount || !sel.isCollapsed || !DOM.editorSurface) return false;
+          const block = getTopLevelBlock(sel.anchorNode);
+          if (!block || (block.tagName !== 'P' && block.tagName !== 'DIV')) return false;
+
+          const rawText = (block.textContent || '').replace(/\u200B/g, '');
+          const normText = normalizeSmartChars(rawText).trim();
+          if (normText === '---' || normText === '***') {
+            e.preventDefault();
+            const hr = document.createElement('hr');
+            const p = document.createElement('p');
+            p.appendChild(document.createElement('br'));
+            block.replaceWith(hr);
+            hr.after(p);
+            placeCaretAtStart(p);
+            recordMarkdownUndo(rawText, hr, p);
+            onChanged(true);
+            return true;
+          }
+          return false;
+        }
+
+        function checkInlineShortcutOnInput(insertedData) {
+          if (!insertedData || insertedData.length !== 1) return false;
+          const sel = window.getSelection();
+          if (!sel || !sel.rangeCount || !sel.isCollapsed || !DOM.editorSurface) return false;
+          const node = sel.anchorNode;
+          if (!node || node.nodeType !== Node.TEXT_NODE || !DOM.editorSurface.contains(node)) return false;
+
+          const parentEl = node.parentElement;
+          if (parentEl && parentEl.closest('code, a, .date-chip, .attachment-block')) return false;
+
+          const offset = sel.anchorOffset;
+          if (offset < 4) return false;
+
+          const fullText = node.textContent || '';
+          const beforeTrigger = fullText.slice(0, offset - 1);
+          const triggerChar = fullText[offset - 1];
+          const afterTrigger = fullText.slice(offset);
+
+          const normBefore = normalizeSmartChars(beforeTrigger);
+          const lastClosing = normBefore[normBefore.length - 1];
+          if (!lastClosing || !['*', '_', '~', '`', ')', '='].includes(lastClosing)) return false;
+
+          const rules = [
+            {
+              // Bold: **text**
+              re: /(^|[^\\*])\*\*([^\s*](?:[^*]*[^\s*])?)\*\*$/,
+              build: (m) => {
+                const el = document.createElement('strong');
+                el.textContent = m[2];
+                return { el, raw: `**${m[2]}**`, keepPrefix: m[1] };
+              }
+            },
+            {
+              // Yellow highlight: ==text==
+              re: /(^|[^\\=])==([^\s=](?:[^=]*[^\s=])?)==$/,
+              build: (m) => {
+                const el = document.createElement('span');
+                el.setAttribute('data-bc', 'yellow');
+                el.textContent = m[2];
+                return { el, raw: `==${m[2]}==`, keepPrefix: m[1] };
+              }
+            },
+            {
+              // Strikethrough: ~~text~~
+              re: /(^|[^\\~])~~([^\s~](?:[^~]*[^\s~])?)~~$/,
+              build: (m) => {
+                const el = document.createElement('s');
+                el.textContent = m[2];
+                return { el, raw: `~~${m[2]}~~`, keepPrefix: m[1] };
+              }
+            },
+            {
+              // Inline code: `text`
+              re: /(^|[^\\`])`([^`\s][^`]*|[^`\s])`$/,
+              build: (m) => {
+                const el = document.createElement('code');
+                el.textContent = m[2];
+                return { el, raw: `\`${m[2]}\``, keepPrefix: m[1] };
+              }
+            },
+            {
+              // Link: [label](https://url)
+              re: /(^|[^\\])\[([^\]\r\n]+)\]\(((?:https?:\/\/|mailto:)[^)\s]+)\)$/i,
+              build: (m) => {
+                const el = document.createElement('a');
+                el.href = m[3];
+                el.target = '_blank';
+                el.rel = 'noopener noreferrer';
+                el.textContent = m[2];
+                return { el, raw: `[${m[2]}](${m[3]})`, keepPrefix: m[1] };
+              }
+            },
+            {
+              // Italic: *text* (not preceded/followed by * or alphanumeric like 2*3*4)
+              re: /(^|[^\\*a-zA-Z0-9])\*([^\s*](?:[^*]*[^\s*])?)\*$/,
+              build: (m) => {
+                if (triggerChar === '*') return null;
+                const el = document.createElement('em');
+                el.textContent = m[2];
+                return { el, raw: `*${m[2]}*`, keepPrefix: m[1] };
+              }
+            },
+            {
+              // Italic: _text_ (not mid-word like snake_case_words or URLs with underscores)
+              re: /(^|[^\\_a-zA-Z0-9])_([^\s_](?:[^_]*[^\s_])?)_$/,
+              build: (m) => {
+                if (triggerChar === '_' || /[a-zA-Z0-9_]/.test(triggerChar)) return null;
+                const el = document.createElement('em');
+                el.textContent = m[2];
+                return { el, raw: `_${m[2]}_`, keepPrefix: m[1] };
+              }
+            }
+          ];
+
+          for (const rule of rules) {
+            const m = normBefore.match(rule.re);
+            if (!m) continue;
+            const built = rule.build(m);
+            if (!built) continue;
+
+            const matchStart = m.index + (built.keepPrefix ? built.keepPrefix.length : 0);
+            const prefixText = beforeTrigger.slice(0, matchStart);
+            const trailingText = triggerChar + afterTrigger;
+
+            const parent = node.parentNode;
+            if (!parent) return false;
+
+            if (prefixText) {
+              parent.insertBefore(document.createTextNode(prefixText), node);
+            }
+            parent.insertBefore(built.el, node);
+
+            const afterNode = document.createTextNode(trailingText);
+            parent.replaceChild(afterNode, node);
+
+            const nextRange = document.createRange();
+            nextRange.setStart(afterNode, 1);
+            nextRange.collapse(true);
+            sel.removeAllRanges();
+            sel.addRange(nextRange);
+            State.savedRange = nextRange.cloneRange();
+
+            recordMarkdownUndo(built.raw, built.el);
+            onChanged(true);
+            syncToolbarStateThrottled();
+            return true;
+          }
+
+          return false;
+        }
+
+        function handleInput(e) {
+          const inputType = e && e.inputType ? e.inputType : '';
+          const data = e && typeof e.data === 'string' ? e.data : '';
+
+          if (inputType === 'insertText' || inputType === 'insertCompositionText') {
+            if (data === ' ' || data === '\u00A0') {
+              if (checkBlockShortcutOnSpace()) return;
+            }
+            if (data.length === 1) {
+              checkInlineShortcutOnInput(data);
+            }
+          }
+          onChanged(false);
+        }
+
+        function execCommand(cmd) {
+          const page = getActivePage();
+          if (!page || page.trashed || !DOM.editorSurface) return;
+
+          if (cmd === 'date') return DateSheet.open(null);
+          if (cmd === 'clearColor') return clearColors();
+          if (cmd === 'text' || cmd === 'h1' || cmd === 'h2' || cmd === 'h3' || cmd === 'quote' || cmd === 'callout') {
+            return setBlockType(cmd);
+          }
+
+          restoreSavedSelection();
+          try {
+            switch (cmd) {
+              case 'bold': document.execCommand('bold', false, null); break;
+              case 'italic': document.execCommand('italic', false, null); break;
+              case 'underline': document.execCommand('underline', false, null); break;
+              case 'strike': document.execCommand('strikeThrough', false, null); break;
+              case 'undo': document.execCommand('undo', false, null); break;
+              case 'redo': document.execCommand('redo', false, null); break;
+              case 'ul': document.execCommand('insertUnorderedList', false, null); break;
+              case 'ol': document.execCommand('insertOrderedList', false, null); break;
+              case 'inlineCode': {
+                const sel = window.getSelection();
+                if (sel && sel.rangeCount && !sel.isCollapsed) {
+                  const range = sel.getRangeAt(0);
+                  const anchorEl = range.commonAncestorContainer.nodeType === Node.ELEMENT_NODE
+                    ? range.commonAncestorContainer
+                    : range.commonAncestorContainer.parentElement;
+                  const existingCode = anchorEl ? anchorEl.closest('code') : null;
+                  if (existingCode && DOM.editorSurface.contains(existingCode)) {
+                    const txt = document.createTextNode(existingCode.textContent || '');
+                    existingCode.replaceWith(txt);
+                  } else {
+                    const code = document.createElement('code');
+                    code.textContent = range.toString();
+                    range.deleteContents();
+                    range.insertNode(code);
+                    placeCaretAtEnd(code);
+                  }
+                } else if (sel && sel.rangeCount) {
+                  const range = sel.getRangeAt(0);
+                  const code = document.createElement('code');
+                  const zwsp = document.createTextNode('\u200B');
+                  code.appendChild(zwsp);
+                  range.insertNode(code);
+                  range.setStart(zwsp, 1);
+                  range.collapse(true);
+                  sel.removeAllRanges();
+                  sel.addRange(range);
+                }
+                break;
+              }
+              case 'link': {
+                const sel = window.getSelection();
+                State.savedRange = sel && sel.rangeCount ? sel.getRangeAt(0).cloneRange() : null;
+                const selText = sel ? sel.toString() : '';
+                let urlInp = null;
+                let txtInp = null;
+                Modal.open({
+                  title: 'Insert Link',
+                  confirmText: 'Insert',
+                  renderBody: (b) => {
+                    urlInp = document.createElement('input');
+                    urlInp.className = 'modal-input';
+                    urlInp.placeholder = 'https://example.com';
+                    txtInp = document.createElement('input');
+                    txtInp.className = 'modal-input';
+                    txtInp.value = selText;
+                    txtInp.placeholder = 'Display text (optional)';
+                    b.append(urlInp, txtInp);
+                  },
+                  onConfirm: () => {
+                    const url = (urlInp.value || '').trim();
+                    if (!/^https?:\/\/|^mailto:/i.test(url)) {
+                      showToast('URL must start with https://, http://, or mailto:');
+                      return false;
+                    }
+                    DOM.editorSurface.focus();
+                    const s = window.getSelection();
+                    if (State.savedRange && s) {
+                      s.removeAllRanges();
+                      s.addRange(State.savedRange);
+                    }
+                    const displayTxt = (txtInp.value || '').trim();
+                    if (s && s.rangeCount && !s.isCollapsed && (!displayTxt || displayTxt === s.toString())) {
+                      document.execCommand('createLink', false, url);
+                      const anchor = s.anchorNode?.parentElement?.closest('a');
+                      if (anchor) {
+                        anchor.target = '_blank';
+                        anchor.rel = 'noopener noreferrer';
+                      }
+                    } else {
+                      const a = document.createElement('a');
+                      a.href = url;
+                      a.target = '_blank';
+                      a.rel = 'noopener noreferrer';
+                      a.textContent = displayTxt || url;
+                      const range = s && s.rangeCount ? s.getRangeAt(0) : null;
+                      if (range) {
+                        range.deleteContents();
+                        range.insertNode(a);
+                        placeCaretAtEnd(a);
+                      } else {
+                        DOM.editorSurface.appendChild(a);
+                      }
+                    }
+                    onChanged(true);
+                  }
+                });
+                return;
+              }
+              case 'checklist': {
+                const sel = window.getSelection();
+                const blk = sel && sel.rangeCount ? getTopLevelBlock(sel.anchorNode) : null;
+                if (blk && blk.classList.contains('checklist-item')) {
+                  convertBlockToParagraph(blk, false);
+                  return;
+                }
+                const item = createChecklistBlock('');
+                insertBlock(item, item.querySelector('.checklist-text'));
+                return;
+              }
+              case 'hr': {
+                insertBlock(document.createElement('hr'), null, true);
+                return;
+              }
+            }
+          } catch { /* ignore */ }
+          onChanged(true);
+          syncToolbarStateThrottled();
         }
 
         function applyNotionColor(mode, colorId) {
@@ -7539,305 +8478,54 @@
           }
         }
 
-        function execCommand(cmd) {
-          const page = getActivePage();
-          if (!page || page.trashed || !DOM.editorSurface) return;
-
-          if (cmd === 'undo') return History.undo(page);
-          if (cmd === 'redo') return History.redo(page);
-          if (cmd === 'subpage' || cmd === 'page') return insertSubpageCommand();
-          if (cmd === 'date') return DateSheet.open(null);
-          if (cmd === 'clearColor') return clearColors();
-          if (cmd === 'image') {
-            State.replacingAttachBlock = null;
-            if (DOM.attachGalleryInput) { DOM.attachGalleryInput.value = ''; DOM.attachGalleryInput.click(); }
-            return;
-          }
-          if (cmd === 'file') {
-            State.replacingAttachBlock = null;
-            if (DOM.attachFileInput) { DOM.attachFileInput.value = ''; DOM.attachFileInput.click(); }
-            return;
-          }
-          if (cmd === 'text' || cmd === 'h1' || cmd === 'h2' || cmd === 'h3' || cmd === 'quote' || cmd === 'callout') {
-            return setBlockType(cmd);
-          }
-
-          restoreSavedSelection();
-          try {
-            switch (cmd) {
-              case 'bold': document.execCommand('bold', false, null); break;
-              case 'italic': document.execCommand('italic', false, null); break;
-              case 'underline': document.execCommand('underline', false, null); break;
-              case 'strike': document.execCommand('strikeThrough', false, null); break;
-              case 'inlineCode': {
-                const sel = window.getSelection();
-                if (sel && sel.rangeCount && !sel.isCollapsed) {
-                  const range = sel.getRangeAt(0);
-                  const code = document.createElement('code');
-                  code.textContent = range.toString();
-                  range.deleteContents();
-                  range.insertNode(code);
-                  placeCaretAtEnd(code);
-                } else if (sel && sel.rangeCount) {
-                  const range = sel.getRangeAt(0);
-                  const code = document.createElement('code');
-                  const zwsp = document.createTextNode('\u200B');
-                  code.appendChild(zwsp);
-                  range.insertNode(code);
-                  range.setStart(zwsp, 1);
-                  range.collapse(true);
-                  sel.removeAllRanges();
-                  sel.addRange(range);
-                }
-                break;
-              }
-              case 'link': {
-                const sel = window.getSelection();
-                State.savedRange = sel && sel.rangeCount ? sel.getRangeAt(0).cloneRange() : null;
-                const selText = sel ? sel.toString() : '';
-                let urlInp = null;
-                let txtInp = null;
-                Modal.open({
-                  title: 'Insert Link',
-                  confirmText: 'Insert',
-                  renderBody: (b) => {
-                    urlInp = document.createElement('input');
-                    urlInp.className = 'modal-input';
-                    urlInp.placeholder = 'https://example.com';
-                    txtInp = document.createElement('input');
-                    txtInp.className = 'modal-input';
-                    txtInp.value = selText;
-                    txtInp.placeholder = 'Display text (optional)';
-                    b.append(urlInp, txtInp);
-                  },
-                  onConfirm: () => {
-                    const url = (urlInp.value || '').trim();
-                    if (!/^https?:\/\/|^mailto:/i.test(url)) {
-                      showToast('URL must start with https://, http://, or mailto:');
-                      return false;
-                    }
-                    DOM.editorSurface.focus();
-                    const s = window.getSelection();
-                    if (State.savedRange && s) {
-                      s.removeAllRanges();
-                      s.addRange(State.savedRange);
-                    }
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.target = '_blank';
-                    a.rel = 'noopener noreferrer';
-                    a.textContent = (txtInp.value || '').trim() || url;
-                    const range = s && s.rangeCount ? s.getRangeAt(0) : null;
-                    if (range) {
-                      range.deleteContents();
-                      range.insertNode(a);
-                      placeCaretAtEnd(a);
-                    } else {
-                      DOM.editorSurface.appendChild(a);
-                    }
-                    onChanged(true);
-                  }
-                });
-                return;
-              }
-              case 'ul': document.execCommand('insertUnorderedList', false, null); break;
-              case 'ol': document.execCommand('insertOrderedList', false, null); break;
-              case 'checklist': {
-                const item = createChecklistBlock('');
-                insertBlock(item, item.querySelector('.checklist-text'));
-                return;
-              }
-              case 'toggle': {
-                const block = createToggleBlock('Toggle section');
-                insertBlock(block, block.querySelector('.toggle-summary'), true);
-                return;
-              }
-              case 'code': {
-                const pre = document.createElement('pre');
-                const code = document.createElement('code');
-                code.textContent = window.getSelection()?.toString() || '// code';
-                pre.appendChild(code);
-                insertBlock(pre, code, true);
-                return;
-              }
-              case 'hr': {
-                insertBlock(document.createElement('hr'), null, true);
-                return;
-              }
-            }
-          } catch { /* ignore */ }
-          onChanged(true);
-        }
-
-        function positionBlockHandle(blockEl) {
-          if (!DOM.blockHandleBtn || !DOM.editorSurface) return;
-          const page = getActivePage();
-          if (!page || page.trashed || !blockEl || blockEl.parentElement !== DOM.editorSurface || blockEl.classList.contains('attachment-block')) {
-            DOM.blockHandleBtn.classList.remove('visible');
-            return;
-          }
-          State.activeBlockEl = blockEl;
-          DOM.blockHandleBtn.style.top = `${blockEl.offsetTop + 2}px`;
-          DOM.blockHandleBtn.classList.add('visible');
-        }
-
-        function openBlockMenu(anchorRect) {
-          const blk = State.activeBlockEl;
-          if (!blk || !DOM.editorSurface || !DOM.editorSurface.contains(blk)) return;
-
-          Popover.openAt(anchorRect, (menu) => {
-            const addTitle = (txt) => {
-              const t = document.createElement('div');
-              t.className = 'popover-section-title';
-              t.textContent = txt;
-              menu.appendChild(t);
-            };
-            const addBtn = (label, fn, danger = false) => {
-              const b = document.createElement('button');
-              b.type = 'button';
-              b.className = `popover-item${danger ? ' danger' : ''}`;
-              b.textContent = label;
-              b.addEventListener('click', () => { Popover.close(); fn(); });
-              menu.appendChild(b);
-            };
-
-            addTitle('Block Color');
-            const makeGrid = (attr) => {
-              const grid = document.createElement('div');
-              grid.className = 'color-grid';
-              NOTION_COLORS.forEach((c) => {
-                const btn = document.createElement('button');
-                btn.type = 'button';
-                btn.className = 'notion-color-btn';
-                btn.textContent = 'A';
-                if (c.id !== 'default') btn.setAttribute(attr, c.id);
-                btn.addEventListener('click', () => {
-                  if (c.id === 'default') blk.removeAttribute(attr);
-                  else blk.setAttribute(attr, c.id);
-                  Popover.close();
-                  onChanged(true);
-                });
-                grid.appendChild(btn);
-              });
-              menu.appendChild(grid);
-            };
-            makeGrid('data-tc');
-            addTitle('Block Background');
-            makeGrid('data-bc');
-
-            const div = document.createElement('div');
-            div.className = 'popover-divider';
-            menu.appendChild(div);
-
-            addTitle('Block Actions');
-            addBtn('📑 Duplicate block', () => { blk.after(blk.cloneNode(true)); onChanged(true); });
-            addBtn('🗑️ Delete block', () => {
-              blk.remove();
-              if (DOM.blockHandleBtn) DOM.blockHandleBtn.classList.remove('visible');
-              onChanged(true);
-            }, true);
-          });
-        }
-
-        function renderSlashMenu() {
-          if (!State.slashState || !DOM.popoverMenu) return;
-          const q = State.slashState.query.toLowerCase();
-          const filtered = SLASH_COMMANDS.filter((c) =>
-            c.label.toLowerCase().includes(q) || c.id.includes(q) || c.desc.toLowerCase().includes(q)
-          );
-          if (!filtered.length) return Popover.close();
-          if (State.slashState.selectedIdx >= filtered.length) State.slashState.selectedIdx = 0;
-
-          Popover.openAt(State.slashState.rect, (menu) => {
-            const title = document.createElement('div');
-            title.className = 'popover-section-title';
-            title.textContent = 'Insert Block';
-            menu.appendChild(title);
-
-            filtered.forEach((cmd, idx) => {
-              const btn = document.createElement('button');
-              btn.type = 'button';
-              btn.className = `popover-item${idx === State.slashState.selectedIdx ? ' selected' : ''}`;
-              btn.innerHTML = `<span style="width:22px;text-align:center;font-weight:700;">${cmd.icon}</span><span>${cmd.label}</span>`;
-              btn.addEventListener('mousedown', (e) => e.preventDefault());
-              btn.addEventListener('click', () => executeSlashCommand(cmd.id));
-              menu.appendChild(btn);
-            });
-          });
-        }
-
-        function executeSlashCommand(cmdId) {
-          if (State.slashState) {
-            const { node, startOffset, query } = State.slashState;
-            try {
-              if (node && node.nodeType === Node.TEXT_NODE) {
-                const len = 1 + query.length;
-                const text = node.textContent || '';
-                node.textContent = text.slice(0, startOffset) + text.slice(startOffset + len);
-                const range = document.createRange();
-                range.setStart(node, Math.min(startOffset, node.textContent.length));
-                range.collapse(true);
-                const sel = window.getSelection();
-                sel.removeAllRanges();
-                sel.addRange(range);
-              }
-            } catch { /* ignore */ }
-          }
-          Popover.close();
-          execCommand(cmdId);
-        }
-
-        function checkSlashTrigger() {
+        function updateToolbarState() {
+          if (!DOM.keyboardToolbar || !DOM.editorSurface || !State.isEditing) return;
           const sel = window.getSelection();
-          if (!sel || !sel.rangeCount || !sel.isCollapsed || !DOM.editorSurface) return;
-          const node = sel.anchorNode;
-          if (!node || node.nodeType !== Node.TEXT_NODE || !DOM.editorSurface.contains(node)) {
-            if (State.slashState) Popover.close();
-            return;
+          if (!sel || !sel.rangeCount || !DOM.editorSurface.contains(sel.anchorNode)) return;
+
+          State.savedRange = sel.getRangeAt(0).cloneRange();
+          const anchorEl = sel.anchorNode.nodeType === Node.ELEMENT_NODE
+            ? sel.anchorNode
+            : sel.anchorNode.parentElement;
+          const blk = getTopLevelBlock(sel.anchorNode);
+
+          const setBtnActive = (cmd, isActive) => {
+            const btn = DOM.keyboardToolbar.querySelector(`.ktb-btn[data-ktb="${cmd}"]`);
+            if (btn) btn.classList.toggle('active', Boolean(isActive));
+          };
+
+          try {
+            setBtnActive('bold', document.queryCommandState('bold'));
+            setBtnActive('italic', document.queryCommandState('italic'));
+            setBtnActive('underline', document.queryCommandState('underline'));
+            setBtnActive('strike', document.queryCommandState('strikeThrough'));
+            setBtnActive('ul', document.queryCommandState('insertUnorderedList'));
+            setBtnActive('ol', document.queryCommandState('insertOrderedList'));
+          } catch { /* ignore */ }
+
+          setBtnActive('checklist', Boolean(blk && blk.classList.contains('checklist-item')));
+          setBtnActive('inlineCode', Boolean(anchorEl && anchorEl.closest('code')));
+          setBtnActive('link', Boolean(anchorEl && anchorEl.closest('a:not(.subpage-link)')));
+
+          const blockType = getCurrentBlockType();
+          if (DOM.ktbHeadingBtn) {
+            DOM.ktbHeadingBtn.classList.toggle('active', blockType !== 'text' || State.headingMenuOpen);
           }
-          const textBefore = node.textContent.slice(0, sel.anchorOffset);
-          const match = textBefore.match(/(?:^|\s)\/([a-z0-9]*)$/i);
-          if (match) {
-            const rect = sel.getRangeAt(0).cloneRange().getBoundingClientRect();
-            State.slashState = {
-              node,
-              startOffset: sel.anchorOffset - match[1].length - 1,
-              query: match[1],
-              selectedIdx: State.slashState ? State.slashState.selectedIdx : 0,
-              rect: rect.width || rect.height ? rect : DOM.editorSurface.getBoundingClientRect()
-            };
-            renderSlashMenu();
-          } else if (State.slashState) {
-            Popover.close();
+
+          const tcEl = anchorEl ? anchorEl.closest('[data-tc]') : null;
+          const bcEl = anchorEl ? anchorEl.closest('[data-bc]') : null;
+          const nextTc = tcEl && DOM.editorSurface.contains(tcEl) ? tcEl.getAttribute('data-tc') : 'default';
+          const nextBc = bcEl && DOM.editorSurface.contains(bcEl) ? bcEl.getAttribute('data-bc') : 'default';
+          if (nextTc !== State.activeTextColor || nextBc !== State.activeBgColor) {
+            State.activeTextColor = nextTc || 'default';
+            State.activeBgColor = nextBc || 'default';
+            updateToolbarColorIndicator();
           }
         }
+
+        const syncToolbarStateThrottled = throttle(updateToolbarState, 90);
 
         function handleKeydown(e) {
-          if (State.slashState && Popover.isOpen()) {
-            const q = State.slashState.query.toLowerCase();
-            const filtered = SLASH_COMMANDS.filter((c) =>
-              c.label.toLowerCase().includes(q) || c.id.includes(q) || c.desc.toLowerCase().includes(q)
-            );
-            if (e.key === 'ArrowDown') {
-              e.preventDefault();
-              State.slashState.selectedIdx = (State.slashState.selectedIdx + 1) % filtered.length;
-              return renderSlashMenu();
-            }
-            if (e.key === 'ArrowUp') {
-              e.preventDefault();
-              State.slashState.selectedIdx = (State.slashState.selectedIdx - 1 + filtered.length) % filtered.length;
-              return renderSlashMenu();
-            }
-            if (e.key === 'Enter' && filtered[State.slashState.selectedIdx]) {
-              e.preventDefault();
-              return executeSlashCommand(filtered[State.slashState.selectedIdx].id);
-            }
-            if (e.key === 'Escape') {
-              e.preventDefault();
-              return Popover.close();
-            }
-          }
-
           const sel = window.getSelection();
           if (!sel || !sel.rangeCount) return;
           const range = sel.getRangeAt(0);
@@ -7846,15 +8534,14 @@
             : range.startContainer.parentElement;
           const block = getTopLevelBlock(sel.anchorNode);
 
-          // 1. BACKSPACE at start of list item, checklist, callout, quote, or code block -> convert to normal paragraph
+          /* Backspace right after a live Markdown conversion reverts to raw Markdown text */
           if (e.key === 'Backspace' && range.collapsed) {
-            const li = anchorEl ? anchorEl.closest('li') : null;
-            if (li && DOM.editorSurface.contains(li) && isCaretAtStartOf(li, range)) {
-              e.preventDefault();
-              convertListItemToParagraph(li, true);
-              return;
-            }
-            if (block && block.classList.contains('checklist-item')) {
+            if (tryUndoLastMarkdownConversion(e)) return;
+          }
+
+          /* Backspace at start of checklist, callout, or quote converts to normal paragraph */
+          if (e.key === 'Backspace' && range.collapsed && block) {
+            if (block.classList.contains('checklist-item')) {
               const txtEl = block.querySelector('.checklist-text') || block;
               if (isCaretAtStartOf(txtEl, range)) {
                 e.preventDefault();
@@ -7862,7 +8549,7 @@
                 return;
               }
             }
-            if (block && block.classList.contains('callout-block')) {
+            if (block.classList.contains('callout-block')) {
               const bodyEl = block.querySelector('.callout-body') || block;
               if (isCaretAtStartOf(bodyEl, range)) {
                 e.preventDefault();
@@ -7870,31 +8557,20 @@
                 return;
               }
             }
-            if (block && (block.tagName === 'BLOCKQUOTE' || block.tagName === 'PRE')) {
-              const targetContainer = block.tagName === 'PRE' ? (block.querySelector('code') || block) : block;
-              if (isCaretAtStartOf(targetContainer, range)) {
-                e.preventDefault();
-                convertBlockToParagraph(block, true);
-                return;
-              }
+            if (block.tagName === 'BLOCKQUOTE' && isCaretAtStartOf(block, range)) {
+              e.preventDefault();
+              convertBlockToParagraph(block, true);
+              return;
             }
           }
 
-          // 2. ENTER on empty bullet/numbered list item -> exit list into normal paragraph
+          /* Enter on "---" or "***" converts to divider + empty paragraph */
           if (e.key === 'Enter' && !e.shiftKey && range.collapsed) {
-            const li = anchorEl ? anchorEl.closest('li') : null;
-            if (li && DOM.editorSurface.contains(li)) {
-              const liText = (li.textContent || '').replace(/[\u200B\u00A0\s]/g, '');
-              if (liText.length === 0) {
-                e.preventDefault();
-                convertListItemToParagraph(li, true);
-                return;
-              }
-            }
+            if (checkBlockShortcutOnEnter(e)) return;
           }
 
-          // 3. ENTER on checklist item
-          if (e.key === 'Enter' && block && block.classList.contains('checklist-item')) {
+          /* Enter on checklist item: creates new checklist item, or exits if empty */
+          if (e.key === 'Enter' && !e.shiftKey && block && block.classList.contains('checklist-item')) {
             e.preventDefault();
             const txt = (block.querySelector('.checklist-text')?.textContent || '').replace(/[\u200B\u00A0\s]/g, '');
             if (!txt) {
@@ -7908,12 +8584,12 @@
             return;
           }
 
-          // 4. ENTER twice on an empty line inside callout, quote, or code block -> exit into normal paragraph below
-          if (e.key === 'Enter' && !e.shiftKey && block && (block.classList.contains('callout-block') || block.tagName === 'BLOCKQUOTE' || block.tagName === 'PRE')) {
+          /* Enter twice on empty line inside callout or quote exits to a normal paragraph */
+          if (e.key === 'Enter' && !e.shiftKey && block && (block.classList.contains('callout-block') || block.tagName === 'BLOCKQUOTE')) {
             const now = Date.now();
             const containerEl = block.classList.contains('callout-block')
               ? (block.querySelector('.callout-body') || block)
-              : (block.tagName === 'PRE' ? (block.querySelector('code') || block) : block);
+              : block;
 
             let onEmptyLine = false;
             try {
@@ -7932,13 +8608,8 @@
               lastEmptyEnterBlock = null;
               lastEmptyEnterTs = 0;
 
-              if (block.tagName === 'PRE') {
-                const codeEl = block.querySelector('code') || block;
-                codeEl.textContent = (codeEl.textContent || '').replace(/\n+$/, '');
-              } else {
-                while (containerEl.lastChild && (containerEl.lastChild.nodeName === 'BR' || (containerEl.lastChild.nodeType === Node.TEXT_NODE && !containerEl.lastChild.textContent.trim()))) {
-                  containerEl.lastChild.remove();
-                }
+              while (containerEl.lastChild && (containerEl.lastChild.nodeName === 'BR' || (containerEl.lastChild.nodeType === Node.TEXT_NODE && !containerEl.lastChild.textContent.trim()))) {
+                containerEl.lastChild.remove();
               }
 
               const p = document.createElement('p');
@@ -7973,76 +8644,12 @@
             return;
           }
 
-          if (e.key === 'Enter' && !e.shiftKey && block && block.tagName !== 'PRE') {
-            const txt = block.textContent.trim();
-            if (txt === '---') {
+          /* Backspace at start of list item exits list cleanly */
+          if (e.key === 'Backspace' && range.collapsed) {
+            const li = anchorEl ? anchorEl.closest('li') : null;
+            if (li && DOM.editorSurface.contains(li) && isCaretAtStartOf(li, range)) {
               e.preventDefault();
-              const hr = document.createElement('hr');
-              const p = document.createElement('p');
-              p.appendChild(document.createElement('br'));
-              block.replaceWith(hr);
-              hr.after(p);
-              placeCaretAtStart(p);
-              return onChanged(true);
-            }
-            if (txt === '```') {
-              e.preventDefault();
-              const pre = document.createElement('pre');
-              const code = document.createElement('code');
-              code.appendChild(document.createElement('br'));
-              pre.appendChild(code);
-              block.replaceWith(pre);
-              placeCaretAtStart(code);
-              return onChanged(true);
-            }
-          }
-
-          if (e.key === ' ' && sel && sel.rangeCount && sel.isCollapsed) {
-            const anchor = sel.anchorNode;
-            if (!anchor || anchor.nodeType !== Node.TEXT_NODE) return;
-            if (block && block.tagName === 'PRE') return;
-            const prefix = anchor.textContent.slice(0, sel.anchorOffset);
-            const rest = anchor.textContent.slice(sel.anchorOffset);
-
-            const swap = (newEl, focusEl = null) => {
-              e.preventDefault();
-              if (block && block !== DOM.editorSurface) block.replaceWith(newEl);
-              else anchor.parentNode.replaceChild(newEl, anchor);
-              placeCaretAtStart(focusEl || newEl);
-              onChanged(true);
-            };
-
-            if (/^#{1,3}$/.test(prefix)) {
-              const h = document.createElement(`h${prefix.length}`);
-              if (rest) h.textContent = rest;
-              else h.appendChild(document.createElement('br'));
-              return swap(h);
-            }
-            if (prefix === '-' || prefix === '*') {
-              const ul = document.createElement('ul');
-              const li = document.createElement('li');
-              if (rest) li.textContent = rest;
-              else li.appendChild(document.createElement('br'));
-              ul.appendChild(li);
-              return swap(ul, li);
-            }
-            if (prefix === '1.') {
-              const ol = document.createElement('ol');
-              const li = document.createElement('li');
-              if (rest) li.textContent = rest;
-              else li.appendChild(document.createElement('br'));
-              ol.appendChild(li);
-              return swap(ol, li);
-            }
-            if (prefix === '[]' || prefix === '[ ]') {
-              const item = createChecklistBlock(rest);
-              return swap(item, item.querySelector('.checklist-text'));
-            }
-            if (prefix === '>') {
-              const bq = document.createElement('blockquote');
-              if (rest) bq.textContent = rest;
-              else bq.appendChild(document.createElement('br'));
-              return swap(bq);
+              convertListItemToParagraph(li, true);
             }
           }
         }
@@ -8050,14 +8657,9 @@
         function onChanged(immediate = false) {
           const page = getActivePage();
           if (!page || page.trashed) return;
-          if (DOM.editorSurface) {
-            ensureTwoTrailingEmptyParagraphs(DOM.editorSurface);
-          }
           if (DOM.saveStatus) DOM.saveStatus.textContent = 'Saving...';
-          Render.updateStats();
           if (immediate) {
-            saveActivePageNow();
-            History.push(page.id, page.content);
+            saveActivePageNow(true);
           } else {
             debouncedSave();
           }
@@ -8072,9 +8674,8 @@
           execCommand,
           applyNotionColor,
           clearColors,
-          positionBlockHandle,
-          openBlockMenu,
-          checkSlashTrigger,
+          syncToolbarStateThrottled,
+          handleInput,
           handleKeydown,
           onChanged
         };
@@ -8270,7 +8871,7 @@
       })();
 
       /* ======================================================================
-         Export & Import (Includes Attachments as Base64 & Safe Sync Metadata)
+         Export & Import (JSON Backups + .md / .txt Markdown Files)
          ====================================================================== */
       function downloadFile(filename, content, mime) {
         try {
@@ -8366,7 +8967,6 @@
           State.activeNotebookId = null;
           State.activeTag = null;
           State.activePageId = Object.keys(validated.pages)[0] || null;
-          State.history.clear();
           Storage.save(State);
           SettingsSheet.close();
           Render.all();
@@ -8411,58 +9011,159 @@
         }
       }
 
-      function importAllJson(file) {
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = () => {
-          try {
-            const parsed = JSON.parse(String(reader.result || ''));
-            const validated = Storage.validate(parsed);
-            if (!validated) return showToast('Invalid Folio backup file');
-            const pCount = Object.keys(validated.pages).length;
-            const nCount = Object.keys(validated.notebooks).length;
+      function readFileAsText(file) {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(String(reader.result || ''));
+          reader.onerror = () => reject(new Error('Read failed'));
+          reader.readAsText(file);
+        });
+      }
 
-            Modal.open({
-              title: 'Import Backup',
-              message: `Found ${nCount} notebook(s) and ${pCount} page(s). Choose how to import:`,
-              hideActions: true,
-              renderBody: (body) => {
-                const row = document.createElement('div');
-                row.className = 'modal-actions';
+      async function importMarkdownFiles(fileList) {
+        const files = Array.from(fileList || []);
+        if (!files.length) return;
 
-                const cancelBtn = document.createElement('button');
-                cancelBtn.type = 'button';
-                cancelBtn.className = 'btn-secondary';
-                cancelBtn.textContent = 'Cancel';
-                cancelBtn.addEventListener('click', () => Modal.close());
-
-                const mergeBtn = document.createElement('button');
-                mergeBtn.type = 'button';
-                mergeBtn.className = 'btn-primary';
-                mergeBtn.textContent = 'Merge';
-                mergeBtn.addEventListener('click', () => {
-                  Modal.close();
-                  applyImportedData(parsed, validated, 'merge');
-                });
-
-                const replaceBtn = document.createElement('button');
-                replaceBtn.type = 'button';
-                replaceBtn.className = 'btn-danger';
-                replaceBtn.textContent = 'Replace';
-                replaceBtn.addEventListener('click', () => {
-                  Modal.close();
-                  applyImportedData(parsed, validated, 'replace');
-                });
-
-                row.append(cancelBtn, mergeBtn, replaceBtn);
-                body.appendChild(row);
-              }
-            });
-          } catch {
-            showToast('Could not parse JSON file');
+        const parsedNotes = [];
+        for (const f of files) {
+          const lower = (f.name || '').toLowerCase();
+          if (!lower.endsWith('.md') && !lower.endsWith('.markdown') && !lower.endsWith('.txt')) {
+            showToast(`Unsupported file: ${f.name || 'file'}`);
+            return;
           }
-        };
-        reader.readAsText(file);
+          try {
+            const text = await readFileAsText(f);
+            if (!text.trim()) {
+              showToast(`Empty file: ${f.name || 'file'}`);
+              return;
+            }
+            const { title, content } = MarkdownCodec.extractTitleAndBodyFromMarkdown(text, f.name);
+            parsedNotes.push({ title, content });
+          } catch {
+            showToast(`Could not read ${f.name || 'file'}`);
+            return;
+          }
+        }
+
+        if (!parsedNotes.length) {
+          showToast('No valid Markdown content found');
+          return;
+        }
+
+        const notebooks = Tree.getSortedNotebooks();
+        const activePg = getActivePage();
+        let targetNbId = null;
+        if (State.activeView === 'notebook' && State.activeNotebookId && State.notebooks[State.activeNotebookId]) {
+          targetNbId = State.activeNotebookId;
+        } else if (activePg && State.notebooks[activePg.notebookId]) {
+          targetNbId = activePg.notebookId;
+        } else {
+          targetNbId = notebooks[0] ? notebooks[0].id : null;
+        }
+        if (!targetNbId) {
+          showToast('No notebook available');
+          return;
+        }
+
+        let orderCursor = Tree.getChildren(targetNbId, null).length;
+        const now = Date.now();
+        let lastCreatedId = null;
+
+        parsedNotes.forEach((note, idx) => {
+          const id = uid('page');
+          State.pages[id] = {
+            id,
+            parentId: null,
+            notebookId: targetNbId,
+            order: orderCursor++,
+            title: note.title,
+            icon: '📝',
+            cover: '',
+            content: note.content,
+            tags: [],
+            pinned: false,
+            favorite: false,
+            archived: false,
+            trashed: false,
+            createdAt: now + idx,
+            updatedAt: now + idx
+          };
+          lastCreatedId = id;
+        });
+
+        State.expanded[targetNbId] = true;
+        if (State.activeView === 'trash' || State.activeView === 'archive') {
+          State.activeView = 'all';
+        }
+        if (lastCreatedId) State.activePageId = lastCreatedId;
+        Storage.save(State);
+        SettingsSheet.close();
+        Render.all();
+        showToast(`Imported ${parsedNotes.length} ${parsedNotes.length === 1 ? 'page' : 'pages'}`);
+      }
+
+      function importBackupOrMarkdown(fileList) {
+        const files = Array.from(fileList || []);
+        if (!files.length) return;
+
+        const first = files[0];
+        const lowerName = (first.name || '').toLowerCase();
+
+        if (files.length === 1 && lowerName.endsWith('.json')) {
+          const reader = new FileReader();
+          reader.onload = () => {
+            try {
+              const parsed = JSON.parse(String(reader.result || ''));
+              const validated = Storage.validate(parsed);
+              if (!validated) return showToast('Invalid Folio backup file');
+              const pCount = Object.keys(validated.pages).length;
+              const nCount = Object.keys(validated.notebooks).length;
+
+              Modal.open({
+                title: 'Import Backup',
+                message: `Found ${nCount} notebook(s) and ${pCount} page(s). Choose how to import:`,
+                hideActions: true,
+                renderBody: (body) => {
+                  const row = document.createElement('div');
+                  row.className = 'modal-actions';
+
+                  const cancelBtn = document.createElement('button');
+                  cancelBtn.type = 'button';
+                  cancelBtn.className = 'btn-secondary';
+                  cancelBtn.textContent = 'Cancel';
+                  cancelBtn.addEventListener('click', () => Modal.close());
+
+                  const mergeBtn = document.createElement('button');
+                  mergeBtn.type = 'button';
+                  mergeBtn.className = 'btn-primary';
+                  mergeBtn.textContent = 'Merge';
+                  mergeBtn.addEventListener('click', () => {
+                    Modal.close();
+                    applyImportedData(parsed, validated, 'merge');
+                  });
+
+                  const replaceBtn = document.createElement('button');
+                  replaceBtn.type = 'button';
+                  replaceBtn.className = 'btn-danger';
+                  replaceBtn.textContent = 'Replace';
+                  replaceBtn.addEventListener('click', () => {
+                    Modal.close();
+                    applyImportedData(parsed, validated, 'replace');
+                  });
+
+                  row.append(cancelBtn, mergeBtn, replaceBtn);
+                  body.appendChild(row);
+                }
+              });
+            } catch {
+              showToast('Could not parse JSON file');
+            }
+          };
+          reader.readAsText(first);
+          return;
+        }
+
+        importMarkdownFiles(files);
       }
 
       /* ======================================================================
@@ -8671,7 +9372,6 @@
                 trashed.forEach((p) => {
                   State.tombstones.pages[p.id] = now;
                   delete State.pages[p.id];
-                  State.history.delete(p.id);
                 });
                 State.activePageId = null;
                 Storage.save(State);
@@ -8685,7 +9385,7 @@
         if (DOM.exportBackupBtn) DOM.exportBackupBtn.addEventListener('click', exportAllJson);
         if (DOM.importBackupBtn && DOM.importFileInput) {
           DOM.importBackupBtn.addEventListener('click', () => { DOM.importFileInput.value = ''; DOM.importFileInput.click(); });
-          DOM.importFileInput.addEventListener('change', (e) => e.target.files?.[0] && importAllJson(e.target.files[0]));
+          DOM.importFileInput.addEventListener('change', (e) => e.target.files?.length && importBackupOrMarkdown(e.target.files));
         }
 
         if (DOM.mobileMenuBtn) DOM.mobileMenuBtn.addEventListener('click', openMobileSidebar);
@@ -8746,13 +9446,18 @@
               page.updatedAt = Date.now();
               Storage.save(State);
               Render.all();
-            });
+            }, '📄');
           });
         }
 
         if (DOM.pageTitleInput) {
           DOM.pageTitleInput.addEventListener('focus', () => KeyboardDock.show());
           DOM.pageTitleInput.addEventListener('input', () => {
+            const page = getActivePage();
+            if (!page || page.trashed) return;
+            const val = DOM.pageTitleInput.value.slice(0, 200);
+            page.title = val;
+            Render.updatePageTitleInLists(page.id, val);
             if (DOM.saveStatus) DOM.saveStatus.textContent = 'Saving...';
             debouncedSave();
           });
@@ -8780,7 +9485,7 @@
           });
         }
 
-        /* Tapping empty area below editor content places cursor in the last empty paragraph */
+        /* Tapping empty area below editor content places cursor in a final empty paragraph */
         if (DOM.editorScroll) {
           DOM.editorScroll.addEventListener('click', (e) => {
             const page = getActivePage();
@@ -8811,7 +9516,7 @@
             const action = btn.dataset.ktb;
 
             if (action === 'done') {
-              saveActivePageNow();
+              saveActivePageNow(true);
               KeyboardDock.hide();
               return;
             }
@@ -8864,60 +9569,15 @@
           DOM.attachBlockPopup.addEventListener('mousedown', (e) => e.preventDefault());
         }
 
-        if (DOM.blockHandleBtn) {
-          DOM.blockHandleBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            Editor.openBlockMenu(DOM.blockHandleBtn.getBoundingClientRect());
-          });
-        }
-
         if (DOM.editorSurface) {
           DOM.editorSurface.addEventListener('focus', () => KeyboardDock.show());
 
-          DOM.editorSurface.addEventListener('input', () => {
-            Editor.onChanged(false);
-            Editor.checkSlashTrigger();
+          DOM.editorSurface.addEventListener('input', (e) => {
+            Editor.handleInput(e);
           });
 
           DOM.editorSurface.addEventListener('keydown', (e) => {
-            const mod = e.ctrlKey || e.metaKey;
-            if (mod && e.key.toLowerCase() === 'z') {
-              e.preventDefault();
-              if (e.shiftKey) History.redo(getActivePage());
-              else History.undo(getActivePage());
-              return;
-            }
             Editor.handleKeydown(e);
-          });
-
-          DOM.editorSurface.addEventListener('mousemove', (e) => {
-            const blk = Editor.getTopLevelBlock(e.target);
-            if (blk) Editor.positionBlockHandle(blk);
-          });
-
-          DOM.editorSurface.addEventListener('keyup', () => {
-            const sel = window.getSelection();
-            if (sel && sel.rangeCount && DOM.editorSurface.contains(sel.anchorNode)) {
-              State.savedRange = sel.getRangeAt(0).cloneRange();
-            }
-            const blk = sel && sel.rangeCount ? Editor.getTopLevelBlock(sel.anchorNode) : null;
-            if (blk) Editor.positionBlockHandle(blk);
-          });
-
-          DOM.editorSurface.addEventListener('mouseup', () => {
-            const sel = window.getSelection();
-            if (sel && sel.rangeCount && DOM.editorSurface.contains(sel.anchorNode)) {
-              State.savedRange = sel.getRangeAt(0).cloneRange();
-            }
-          });
-
-          DOM.editorSurface.addEventListener('touchend', () => {
-            setTimeout(() => {
-              const sel = window.getSelection();
-              if (sel && sel.rangeCount && DOM.editorSurface.contains(sel.anchorNode)) {
-                State.savedRange = sel.getRangeAt(0).cloneRange();
-              }
-            }, 40);
           });
 
           DOM.editorSurface.addEventListener('change', (e) => {
@@ -8962,12 +9622,6 @@
               if (page && !page.trashed) DateSheet.open(dateChip);
               return;
             }
-            const arrow = e.target.closest('.toggle-arrow');
-            if (arrow) {
-              const tb = arrow.closest('.toggle-block');
-              if (tb) { tb.classList.toggle('open'); Editor.onChanged(true); }
-              return;
-            }
             const subLink = e.target.closest('.subpage-link[data-page-id]');
             if (subLink) {
               e.preventDefault();
@@ -8991,9 +9645,44 @@
               if (!sel || !sel.rangeCount) return;
               const range = sel.getRangeAt(0);
               range.deleteContents();
-              if (html) range.insertNode(Sanitizer.toFragment(html));
-              else if (text) range.insertNode(document.createTextNode(text));
-              range.collapse(false);
+
+              if (text && !html && MarkdownCodec.looksLikeMarkdown(text)) {
+                const mdHtml = MarkdownCodec.markdownToSafeHtml(text);
+                const frag = Sanitizer.toFragment(mdHtml);
+                const lastNode = frag.lastChild;
+                const curBlock = Editor.getTopLevelBlock(range.startContainer);
+                if (curBlock && isEmptyParagraphElement(curBlock) && frag.firstElementChild) {
+                  const nodes = Array.from(frag.childNodes);
+                  curBlock.replaceWith(...nodes);
+                  const tail = nodes[nodes.length - 1];
+                  if (tail) Editor.placeCaretAtEnd(tail);
+                } else {
+                  range.insertNode(frag);
+                  if (lastNode) {
+                    range.setStartAfter(lastNode);
+                    range.collapse(true);
+                    sel.removeAllRanges();
+                    sel.addRange(range);
+                  }
+                }
+              } else if (html) {
+                const frag = Sanitizer.toFragment(html);
+                const lastNode = frag.lastChild;
+                range.insertNode(frag);
+                if (lastNode) {
+                  range.setStartAfter(lastNode);
+                  range.collapse(true);
+                  sel.removeAllRanges();
+                  sel.addRange(range);
+                }
+              } else if (text) {
+                const txtNode = document.createTextNode(text);
+                range.insertNode(txtNode);
+                range.setStartAfter(txtNode);
+                range.collapse(true);
+                sel.removeAllRanges();
+                sel.addRange(range);
+              }
               Editor.onChanged(true);
             } catch { /* ignore */ }
           });
@@ -9018,20 +9707,21 @@
           ) {
             return;
           }
-          saveActivePageNow();
+          saveActivePageNow(true);
           KeyboardDock.hide();
         });
 
         document.addEventListener('click', (e) => {
-          if (Popover.isOpen() && !e.target.closest('#popoverMenu')) Popover.close();
+          if (!Popover.isOpen() || Popover.wasJustOpened()) return;
+          const target = e.target;
+          if (!target || !target.isConnected) return;
+          const path = typeof e.composedPath === 'function' ? e.composedPath() : [];
+          if (DOM.popoverMenu && (path.includes(DOM.popoverMenu) || DOM.popoverMenu.contains(target))) return;
+          Popover.close();
         });
 
         document.addEventListener('selectionchange', () => {
-          if (!DOM.editorSurface) return;
-          const sel = window.getSelection();
-          if (sel && sel.rangeCount && DOM.editorSurface.contains(sel.anchorNode)) {
-            State.savedRange = sel.getRangeAt(0).cloneRange();
-          }
+          Editor.syncToolbarStateThrottled();
         });
 
         document.addEventListener('keydown', (e) => {
@@ -9060,7 +9750,7 @@
           }
           if (mod && e.key.toLowerCase() === 's') {
             e.preventDefault();
-            saveActivePageNow();
+            saveActivePageNow(true);
             showToast('Saved');
           }
         });
